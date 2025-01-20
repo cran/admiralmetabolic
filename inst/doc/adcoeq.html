@@ -1,0 +1,932 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+
+
+<title>Creating a Control of Eating Questionnaire ADaM</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Creating a Control of Eating Questionnaire
+ADaM</h1>
+
+
+
+<div id="license" class="section level1">
+<h1>License</h1>
+<p>Note that University of Leeds are the copyright holders of the
+Control of Eating Questionnaire (CoEQ) and the test data included within
+<code>{admiralmetabolic}</code> as well as the ADCOEQ code are for
+not-for-profit use only within <code>{admiralmetabolic}</code> and
+pharmaverse-related examples/documentation. Any persons or companies
+wanting to use the CoEQ should request a license to do so from the
+following <a href="https://licensing.leeds.ac.uk/product/control-of-eating-questionnaire-coeq">link</a>.</p>
+</div>
+<div id="introduction" class="section level1">
+<h1>Introduction</h1>
+<p>This article describes creating a Control of Eating Questionnaire
+ADaM for clinical trials.</p>
+<p>We advise you first consult the <code>{admiral}</code> <a href="https://pharmaverse.github.io/admiral/articles/questionnaires.html">Creating
+Questionnaire ADaMs vignette</a>. The programming workflow around
+creating the general set-up of an <code>ADQS</code> using
+<code>{admiral}</code> functions is the same. In this vignette, we focus
+on the Control of Eating Questionnaire and avoid repeating information
+and maintaining the same content in two places. As such, the code in
+this vignette is not completely executable; we recommend consulting the
+ADQS template script to view the full workflow.</p>
+<p><strong>Note</strong>: <em>All examples assume CDISC SDTM and/or ADaM
+format as input unless otherwise specified.</em></p>
+<div id="required-packages" class="section level2">
+<h2>Required Packages</h2>
+<p>The examples of this vignette require the following packages.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(admiral)</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">library</span>(admiralmetabolic)</span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="fu">library</span>(pharmaversesdtm)</span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a><span class="fu">library</span>(stringr)</span></code></pre></div>
+</div>
+</div>
+<div id="programming-workflow" class="section level1">
+<h1>Programming Workflow</h1>
+<ul>
+<li><a href="#readdata">Read in Data</a></li>
+<li><a href="#original_items">Original items</a></li>
+<li><a href="#subscales">Derive the four Subscales</a></li>
+<li><a href="#adcoeq_end">Remaining ADCOEQ Set-up</a></li>
+</ul>
+<div id="readdata" class="section level2">
+<h2>Read in Data</h2>
+<p>To start, all data frames needed for the creation of the ADaM dataset
+should be loaded into the global environment. Reading data will usually
+be a company specific process, however, for the purpose of this
+vignette, we will use example data from <code>{pharmaversesdtm}</code>
+and <code>{admiral}</code>. We will utilize <code>DM</code>,
+<code>QS</code> and <code>ADSL</code>.</p>
+<p>In this vignette we use example data for the CoEQ. The example
+<code>QS</code> data (<code>qs_metabolic</code>) is included in the
+<code>{admiralmetabolic}</code> package.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a>dm_metabolic <span class="ot">&lt;-</span> admiralmetabolic<span class="sc">::</span>dm_metabolic</span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>qs_metabolic <span class="ot">&lt;-</span> admiralmetabolic<span class="sc">::</span>qs_metabolic</span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>admiral_adsl <span class="ot">&lt;-</span> admiral<span class="sc">::</span>admiral_adsl</span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a></span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a>dm <span class="ot">&lt;-</span> <span class="fu">convert_blanks_to_na</span>(dm_metabolic)</span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a>qs <span class="ot">&lt;-</span> <span class="fu">convert_blanks_to_na</span>(qs_metabolic)</span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a>admiral_adsl <span class="ot">&lt;-</span> <span class="fu">convert_blanks_to_na</span>(admiral_adsl)</span></code></pre></div>
+<p>Within this vignette, <code>DM</code> is used as the basis for
+<code>ADSL</code>:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="co"># Retrieve required variables from admiral ADSL for this vignette that are not present in DM dataset</span></span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>adsl <span class="ot">&lt;-</span> dm <span class="sc">%&gt;%</span></span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>DOMAIN) <span class="sc">%&gt;%</span></span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">TRT01P =</span> ARM, <span class="at">TRT01A =</span> ACTARM) <span class="sc">%&gt;%</span></span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a>  <span class="fu">derive_vars_merged</span>(</span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a>    <span class="at">dataset_add =</span> admiral_adsl,</span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a>    <span class="at">by_vars =</span> <span class="fu">exprs</span>(USUBJID),</span>
+<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a>    <span class="at">new_vars =</span> <span class="fu">exprs</span>(TRTSDT, TRTEDT)</span>
+<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a>  )</span></code></pre></div>
+</div>
+<div id="original_items" class="section level2">
+<h2>Original Items</h2>
+<p>The original items, i.e. the answers to the questionnaire questions,
+can be handled in the same way as in an <a href="https://pharmaverse.github.io/admiral/articles/bds_finding.html">{admiral}
+BDS finding ADaM</a>.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a>adcoeq1 <span class="ot">&lt;-</span> qs <span class="sc">%&gt;%</span></span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>  <span class="co"># Add ADSL variables</span></span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>  <span class="fu">derive_vars_merged</span>(</span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>    <span class="at">dataset_add =</span> adsl,</span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a>    <span class="at">by_vars =</span> <span class="fu">exprs</span>(STUDYID, USUBJID),</span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a>    <span class="at">new_vars =</span> <span class="fu">exprs</span>(TRTSDT, TRTEDT, TRT01P, TRT01A)</span>
+<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a>  <span class="co"># Add analysis parameter variables</span></span>
+<span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb4-10"><a href="#cb4-10" tabindex="-1"></a>    <span class="at">PARAMCD =</span> QSTESTCD,</span>
+<span id="cb4-11"><a href="#cb4-11" tabindex="-1"></a>    <span class="at">PARAM =</span> QSTEST,</span>
+<span id="cb4-12"><a href="#cb4-12" tabindex="-1"></a>    <span class="at">PARCAT1 =</span> QSCAT</span>
+<span id="cb4-13"><a href="#cb4-13" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb4-14"><a href="#cb4-14" tabindex="-1"></a>  <span class="co"># Add timing variables</span></span>
+<span id="cb4-15"><a href="#cb4-15" tabindex="-1"></a>  <span class="fu">derive_vars_dt</span>(<span class="at">new_vars_prefix =</span> <span class="st">&quot;A&quot;</span>, <span class="at">dtc =</span> QSDTC) <span class="sc">%&gt;%</span></span>
+<span id="cb4-16"><a href="#cb4-16" tabindex="-1"></a>  <span class="fu">derive_vars_dy</span>(<span class="at">reference_date =</span> TRTSDT, <span class="at">source_vars =</span> <span class="fu">exprs</span>(ADT)) <span class="sc">%&gt;%</span></span>
+<span id="cb4-17"><a href="#cb4-17" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb4-18"><a href="#cb4-18" tabindex="-1"></a>    <span class="at">AVISIT =</span> <span class="fu">case_when</span>(</span>
+<span id="cb4-19"><a href="#cb4-19" tabindex="-1"></a>      <span class="fu">is.na</span>(VISIT) <span class="sc">~</span> <span class="cn">NA_character_</span>,</span>
+<span id="cb4-20"><a href="#cb4-20" tabindex="-1"></a>      <span class="fu">str_detect</span>(VISIT, <span class="st">&quot;UNSCHED|RETRIEVAL|AMBUL&quot;</span>) <span class="sc">~</span> <span class="cn">NA_character_</span>,</span>
+<span id="cb4-21"><a href="#cb4-21" tabindex="-1"></a>      <span class="cn">TRUE</span> <span class="sc">~</span> <span class="fu">str_to_title</span>(VISIT)</span>
+<span id="cb4-22"><a href="#cb4-22" tabindex="-1"></a>    ),</span>
+<span id="cb4-23"><a href="#cb4-23" tabindex="-1"></a>    <span class="at">AVISITN =</span> <span class="fu">case_when</span>(</span>
+<span id="cb4-24"><a href="#cb4-24" tabindex="-1"></a>      AVISIT <span class="sc">==</span> <span class="st">&quot;Baseline&quot;</span> <span class="sc">~</span> <span class="dv">0</span>,</span>
+<span id="cb4-25"><a href="#cb4-25" tabindex="-1"></a>      <span class="fu">str_detect</span>(AVISIT, <span class="st">&quot;Screen&quot;</span>) <span class="sc">~</span> <span class="sc">-</span><span class="dv">1</span>,</span>
+<span id="cb4-26"><a href="#cb4-26" tabindex="-1"></a>      <span class="fu">str_detect</span>(VISIT, <span class="st">&quot;WEEK&quot;</span>) <span class="sc">~</span> <span class="fu">as.integer</span>(<span class="fu">str_extract</span>(VISIT, <span class="st">&quot;</span><span class="sc">\\</span><span class="st">d+&quot;</span>)),</span>
+<span id="cb4-27"><a href="#cb4-27" tabindex="-1"></a>      <span class="cn">TRUE</span> <span class="sc">~</span> <span class="cn">NA_integer_</span></span>
+<span id="cb4-28"><a href="#cb4-28" tabindex="-1"></a>    )</span>
+<span id="cb4-29"><a href="#cb4-29" tabindex="-1"></a>  )</span></code></pre></div>
+<table>
+<colgroup>
+<col width="10%" />
+<col width="7%" />
+<col width="53%" />
+<col width="7%" />
+<col width="7%" />
+<col width="3%" />
+<col width="10%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">USUBJID</th>
+<th align="left">PARAMCD</th>
+<th align="left">PARAM</th>
+<th align="left">PARCAT1</th>
+<th align="right">QSSTRESN</th>
+<th align="right">ADY</th>
+<th align="left">AVISIT</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">01-701-1015</td>
+<td align="left">COEQ01</td>
+<td align="left">How hungry have you felt?</td>
+<td align="left">COEQ</td>
+<td align="right">17</td>
+<td align="right">-7</td>
+<td align="left">Screening 1</td>
+</tr>
+<tr class="even">
+<td align="left">01-701-1015</td>
+<td align="left">COEQ02</td>
+<td align="left">How full have you felt?</td>
+<td align="left">COEQ</td>
+<td align="right">81</td>
+<td align="right">-7</td>
+<td align="left">Screening 1</td>
+</tr>
+<tr class="odd">
+<td align="left">01-701-1015</td>
+<td align="left">COEQ03</td>
+<td align="left">How strong was your desire to eat sweet foods?</td>
+<td align="left">COEQ</td>
+<td align="right">38</td>
+<td align="right">-7</td>
+<td align="left">Screening 1</td>
+</tr>
+<tr class="even">
+<td align="left">01-701-1015</td>
+<td align="left">COEQ04</td>
+<td align="left">How strong was your desire to eat savoury foods?</td>
+<td align="left">COEQ</td>
+<td align="right">33</td>
+<td align="right">-7</td>
+<td align="left">Screening 1</td>
+</tr>
+<tr class="odd">
+<td align="left">01-701-1015</td>
+<td align="left">COEQ05</td>
+<td align="left">How happy have you felt?</td>
+<td align="left">COEQ</td>
+<td align="right">60</td>
+<td align="right">-7</td>
+<td align="left">Screening 1</td>
+</tr>
+<tr class="even">
+<td align="left">01-701-1015</td>
+<td align="left">COEQ06</td>
+<td align="left">How anxious have you felt?</td>
+<td align="left">COEQ</td>
+<td align="right">60</td>
+<td align="right">-7</td>
+<td align="left">Screening 1</td>
+</tr>
+<tr class="odd">
+<td align="left">01-701-1015</td>
+<td align="left">COEQ07</td>
+<td align="left">How alert have you felt?</td>
+<td align="left">COEQ</td>
+<td align="right">12</td>
+<td align="right">-7</td>
+<td align="left">Screening 1</td>
+</tr>
+<tr class="even">
+<td align="left">01-701-1015</td>
+<td align="left">COEQ08</td>
+<td align="left">How contented have you felt?</td>
+<td align="left">COEQ</td>
+<td align="right">29</td>
+<td align="right">-7</td>
+<td align="left">Screening 1</td>
+</tr>
+<tr class="odd">
+<td align="left">01-701-1015</td>
+<td align="left">COEQ09</td>
+<td align="left">During the last 7 days how often have you had food
+cravings?</td>
+<td align="left">COEQ</td>
+<td align="right">58</td>
+<td align="right">-7</td>
+<td align="left">Screening 1</td>
+</tr>
+<tr class="even">
+<td align="left">01-701-1015</td>
+<td align="left">COEQ10</td>
+<td align="left">How strong have any food cravings been?</td>
+<td align="left">COEQ</td>
+<td align="right">63</td>
+<td align="right">-7</td>
+<td align="left">Screening 1</td>
+</tr>
+</tbody>
+</table>
+<p>The analysis values (<code>AVAL</code> and <code>AVALC</code>) for
+most original items are set directly from <code>QSSTRESN</code> and
+<code>QSORRES</code>, respectively. However, CoEQ item 6
+(<code>COEQ06</code>) requires a manual transformation, where we invert
+the original scores. This transformation is performed because CoEQ item
+6 is used in calculating the subscale for “Positive Mood,” where its
+original scores indicate anxiety.</p>
+<p>In cases where <code>QSSTRESN</code> values require transformation,
+it is recommended to keep the original <code>QSSTRESN</code> values in
+the ADaM dataset for traceability.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a>adcoeq2 <span class="ot">&lt;-</span> adcoeq1 <span class="sc">%&gt;%</span></span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>  <span class="co"># Add analysis value variables</span></span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a>    <span class="at">AVAL =</span> <span class="fu">if_else</span>(PARAMCD <span class="sc">==</span> <span class="st">&quot;COEQ06&quot;</span>, <span class="dv">100</span> <span class="sc">-</span> QSSTRESN, QSSTRESN),</span>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a>    <span class="at">AVALC =</span> <span class="fu">if_else</span>(PARAMCD <span class="sc">==</span> <span class="st">&quot;COEQ20&quot;</span>, QSORRES, <span class="cn">NA_character_</span>)</span>
+<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a>  )</span></code></pre></div>
+<table style="width:100%;">
+<colgroup>
+<col width="8%" />
+<col width="5%" />
+<col width="49%" />
+<col width="5%" />
+<col width="6%" />
+<col width="2%" />
+<col width="8%" />
+<col width="7%" />
+<col width="3%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">USUBJID</th>
+<th align="left">PARAMCD</th>
+<th align="left">PARAM</th>
+<th align="left">PARCAT1</th>
+<th align="right">QSSTRESN</th>
+<th align="right">ADY</th>
+<th align="left">AVISIT</th>
+<th align="left">AVALC</th>
+<th align="right">AVAL</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">01-701-1015</td>
+<td align="left">COEQ01</td>
+<td align="left">How hungry have you felt?</td>
+<td align="left">COEQ</td>
+<td align="right">17</td>
+<td align="right">-7</td>
+<td align="left">Screening 1</td>
+<td align="left">NA</td>
+<td align="right">17</td>
+</tr>
+<tr class="even">
+<td align="left">01-701-1015</td>
+<td align="left">COEQ02</td>
+<td align="left">How full have you felt?</td>
+<td align="left">COEQ</td>
+<td align="right">81</td>
+<td align="right">-7</td>
+<td align="left">Screening 1</td>
+<td align="left">NA</td>
+<td align="right">81</td>
+</tr>
+<tr class="odd">
+<td align="left">01-701-1015</td>
+<td align="left">COEQ03</td>
+<td align="left">How strong was your desire to eat sweet foods?</td>
+<td align="left">COEQ</td>
+<td align="right">38</td>
+<td align="right">-7</td>
+<td align="left">Screening 1</td>
+<td align="left">NA</td>
+<td align="right">38</td>
+</tr>
+<tr class="even">
+<td align="left">01-701-1015</td>
+<td align="left">COEQ04</td>
+<td align="left">How strong was your desire to eat savoury foods?</td>
+<td align="left">COEQ</td>
+<td align="right">33</td>
+<td align="right">-7</td>
+<td align="left">Screening 1</td>
+<td align="left">NA</td>
+<td align="right">33</td>
+</tr>
+<tr class="odd">
+<td align="left">01-701-1015</td>
+<td align="left">COEQ05</td>
+<td align="left">How happy have you felt?</td>
+<td align="left">COEQ</td>
+<td align="right">60</td>
+<td align="right">-7</td>
+<td align="left">Screening 1</td>
+<td align="left">NA</td>
+<td align="right">60</td>
+</tr>
+<tr class="even">
+<td align="left">01-701-1015</td>
+<td align="left">COEQ06</td>
+<td align="left">How anxious have you felt?</td>
+<td align="left">COEQ</td>
+<td align="right">60</td>
+<td align="right">-7</td>
+<td align="left">Screening 1</td>
+<td align="left">NA</td>
+<td align="right">40</td>
+</tr>
+<tr class="odd">
+<td align="left">01-701-1015</td>
+<td align="left">COEQ07</td>
+<td align="left">How alert have you felt?</td>
+<td align="left">COEQ</td>
+<td align="right">12</td>
+<td align="right">-7</td>
+<td align="left">Screening 1</td>
+<td align="left">NA</td>
+<td align="right">12</td>
+</tr>
+<tr class="even">
+<td align="left">01-701-1015</td>
+<td align="left">COEQ08</td>
+<td align="left">How contented have you felt?</td>
+<td align="left">COEQ</td>
+<td align="right">29</td>
+<td align="right">-7</td>
+<td align="left">Screening 1</td>
+<td align="left">NA</td>
+<td align="right">29</td>
+</tr>
+<tr class="odd">
+<td align="left">01-701-1015</td>
+<td align="left">COEQ09</td>
+<td align="left">During the last 7 days how often have you had food
+cravings?</td>
+<td align="left">COEQ</td>
+<td align="right">58</td>
+<td align="right">-7</td>
+<td align="left">Screening 1</td>
+<td align="left">NA</td>
+<td align="right">58</td>
+</tr>
+<tr class="even">
+<td align="left">01-701-1015</td>
+<td align="left">COEQ20</td>
+<td align="left">Which one food makes it most difficult for you to
+control eating?</td>
+<td align="left">COEQ</td>
+<td align="right">NA</td>
+<td align="right">-7</td>
+<td align="left">Screening 1</td>
+<td align="left">Ice Cream</td>
+<td align="right">NA</td>
+</tr>
+</tbody>
+</table>
+<p>For deriving visits based on time-windows, see <code>{admiral}</code>
+<a href="https://pharmaverse.github.io/admiral/articles/visits_periods.html">Visit
+and Period Variables</a>.</p>
+</div>
+<div id="subscales" class="section level2">
+<h2>Derive the four Subscales</h2>
+<p>For the Control of Eating Questionnaire, four subscales are derived.
+These subscales are derived as the mean across a subset of the various
+items/questions.</p>
+<p>The subscales are defined as follows:</p>
+<ul>
+<li><p>Craving Control: Calculate mean of items 9, 10, 11, 12 and
+19.</p></li>
+<li><p>Craving for Sweet: Calculate mean of items 3, 13, 14 and
+15.</p></li>
+<li><p>Craving for Savoury: Calculate mean of items 4, 16, 17 and
+18.</p></li>
+<li><p>Positive Mood: Calculate mean of items 5, 7, 8 and 6
+(reversed).</p></li>
+</ul>
+<p>These parameters can be derived by
+<code>derive_summary_records()</code>:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a>adcoeq3 <span class="ot">&lt;-</span> adcoeq2 <span class="sc">%&gt;%</span></span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>  <span class="fu">call_derivation</span>(</span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a>    <span class="at">derivation =</span> derive_summary_records,</span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a>    <span class="at">variable_params =</span> <span class="fu">list</span>(</span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a>      <span class="fu">params</span>(</span>
+<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a>        <span class="at">filter_add =</span> PARAMCD <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">&quot;COEQ09&quot;</span>, <span class="st">&quot;COEQ10&quot;</span>, <span class="st">&quot;COEQ11&quot;</span>, <span class="st">&quot;COEQ12&quot;</span>, <span class="st">&quot;COEQ19&quot;</span>),</span>
+<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a>        <span class="at">set_values_to =</span> <span class="fu">exprs</span>(</span>
+<span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a>          <span class="at">AVAL =</span> <span class="fu">mean</span>(AVAL, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb6-9"><a href="#cb6-9" tabindex="-1"></a>          <span class="at">PARAMCD =</span> <span class="st">&quot;COEQCRCO&quot;</span>,</span>
+<span id="cb6-10"><a href="#cb6-10" tabindex="-1"></a>          <span class="at">PARAM =</span> <span class="st">&quot;COEQ - Craving Control&quot;</span></span>
+<span id="cb6-11"><a href="#cb6-11" tabindex="-1"></a>        )</span>
+<span id="cb6-12"><a href="#cb6-12" tabindex="-1"></a>      ),</span>
+<span id="cb6-13"><a href="#cb6-13" tabindex="-1"></a>      <span class="fu">params</span>(</span>
+<span id="cb6-14"><a href="#cb6-14" tabindex="-1"></a>        <span class="at">filter_add =</span> PARAMCD <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">&quot;COEQ03&quot;</span>, <span class="st">&quot;COEQ13&quot;</span>, <span class="st">&quot;COEQ14&quot;</span>, <span class="st">&quot;COEQ15&quot;</span>),</span>
+<span id="cb6-15"><a href="#cb6-15" tabindex="-1"></a>        <span class="at">set_values_to =</span> <span class="fu">exprs</span>(</span>
+<span id="cb6-16"><a href="#cb6-16" tabindex="-1"></a>          <span class="at">AVAL =</span> <span class="fu">mean</span>(AVAL, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb6-17"><a href="#cb6-17" tabindex="-1"></a>          <span class="at">PARAMCD =</span> <span class="st">&quot;COEQCRSW&quot;</span>,</span>
+<span id="cb6-18"><a href="#cb6-18" tabindex="-1"></a>          <span class="at">PARAM =</span> <span class="st">&quot;COEQ - Craving for Sweet&quot;</span></span>
+<span id="cb6-19"><a href="#cb6-19" tabindex="-1"></a>        )</span>
+<span id="cb6-20"><a href="#cb6-20" tabindex="-1"></a>      ),</span>
+<span id="cb6-21"><a href="#cb6-21" tabindex="-1"></a>      <span class="fu">params</span>(</span>
+<span id="cb6-22"><a href="#cb6-22" tabindex="-1"></a>        <span class="at">filter_add =</span> PARAMCD <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">&quot;COEQ04&quot;</span>, <span class="st">&quot;COEQ16&quot;</span>, <span class="st">&quot;COEQ17&quot;</span>, <span class="st">&quot;COEQ18&quot;</span>),</span>
+<span id="cb6-23"><a href="#cb6-23" tabindex="-1"></a>        <span class="at">set_values_to =</span> <span class="fu">exprs</span>(</span>
+<span id="cb6-24"><a href="#cb6-24" tabindex="-1"></a>          <span class="at">AVAL =</span> <span class="fu">mean</span>(AVAL, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb6-25"><a href="#cb6-25" tabindex="-1"></a>          <span class="at">PARAMCD =</span> <span class="st">&quot;COEQCRSA&quot;</span>,</span>
+<span id="cb6-26"><a href="#cb6-26" tabindex="-1"></a>          <span class="at">PARAM =</span> <span class="st">&quot;COEQ - Craving for Savoury&quot;</span></span>
+<span id="cb6-27"><a href="#cb6-27" tabindex="-1"></a>        )</span>
+<span id="cb6-28"><a href="#cb6-28" tabindex="-1"></a>      ),</span>
+<span id="cb6-29"><a href="#cb6-29" tabindex="-1"></a>      <span class="fu">params</span>(</span>
+<span id="cb6-30"><a href="#cb6-30" tabindex="-1"></a>        <span class="at">filter_add =</span> PARAMCD <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">&quot;COEQ05&quot;</span>, <span class="st">&quot;COEQ07&quot;</span>, <span class="st">&quot;COEQ08&quot;</span>, <span class="st">&quot;COEQ06&quot;</span>),</span>
+<span id="cb6-31"><a href="#cb6-31" tabindex="-1"></a>        <span class="at">set_values_to =</span> <span class="fu">exprs</span>(</span>
+<span id="cb6-32"><a href="#cb6-32" tabindex="-1"></a>          <span class="at">AVAL =</span> <span class="fu">mean</span>(AVAL, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb6-33"><a href="#cb6-33" tabindex="-1"></a>          <span class="at">PARAMCD =</span> <span class="st">&quot;COEQPOMO&quot;</span>,</span>
+<span id="cb6-34"><a href="#cb6-34" tabindex="-1"></a>          <span class="at">PARAM =</span> <span class="st">&quot;COEQ - Positive Mood&quot;</span></span>
+<span id="cb6-35"><a href="#cb6-35" tabindex="-1"></a>        )</span>
+<span id="cb6-36"><a href="#cb6-36" tabindex="-1"></a>      )</span>
+<span id="cb6-37"><a href="#cb6-37" tabindex="-1"></a>    ),</span>
+<span id="cb6-38"><a href="#cb6-38" tabindex="-1"></a>    <span class="at">dataset_add =</span> adcoeq2,</span>
+<span id="cb6-39"><a href="#cb6-39" tabindex="-1"></a>    <span class="at">by_vars =</span> <span class="fu">exprs</span>(STUDYID, USUBJID, AVISIT, AVISITN, ADT, ADY, PARCAT1, TRTSDT, TRTEDT, TRT01P, TRT01A)</span>
+<span id="cb6-40"><a href="#cb6-40" tabindex="-1"></a>  )</span></code></pre></div>
+<table>
+<colgroup>
+<col width="17%" />
+<col width="12%" />
+<col width="38%" />
+<col width="8%" />
+<col width="5%" />
+<col width="17%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">USUBJID</th>
+<th align="left">PARAMCD</th>
+<th align="left">PARAM</th>
+<th align="right">AVAL</th>
+<th align="right">ADY</th>
+<th align="left">AVISIT</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">01-701-1015</td>
+<td align="left">COEQCRCO</td>
+<td align="left">COEQ - Craving Control</td>
+<td align="right">62.60</td>
+<td align="right">-7</td>
+<td align="left">Screening 1</td>
+</tr>
+<tr class="even">
+<td align="left">01-701-1015</td>
+<td align="left">COEQCRSA</td>
+<td align="left">COEQ - Craving for Savoury</td>
+<td align="right">49.25</td>
+<td align="right">-7</td>
+<td align="left">Screening 1</td>
+</tr>
+<tr class="odd">
+<td align="left">01-701-1015</td>
+<td align="left">COEQCRSW</td>
+<td align="left">COEQ - Craving for Sweet</td>
+<td align="right">58.50</td>
+<td align="right">-7</td>
+<td align="left">Screening 1</td>
+</tr>
+<tr class="even">
+<td align="left">01-701-1015</td>
+<td align="left">COEQPOMO</td>
+<td align="left">COEQ - Positive Mood</td>
+<td align="right">35.25</td>
+<td align="right">-7</td>
+<td align="left">Screening 1</td>
+</tr>
+<tr class="odd">
+<td align="left">01-701-1015</td>
+<td align="left">COEQCRCO</td>
+<td align="left">COEQ - Craving Control</td>
+<td align="right">54.80</td>
+<td align="right">-2</td>
+<td align="left">Screening 2</td>
+</tr>
+<tr class="even">
+<td align="left">01-701-1015</td>
+<td align="left">COEQCRSA</td>
+<td align="left">COEQ - Craving for Savoury</td>
+<td align="right">65.75</td>
+<td align="right">-2</td>
+<td align="left">Screening 2</td>
+</tr>
+<tr class="odd">
+<td align="left">01-701-1015</td>
+<td align="left">COEQCRSW</td>
+<td align="left">COEQ - Craving for Sweet</td>
+<td align="right">43.50</td>
+<td align="right">-2</td>
+<td align="left">Screening 2</td>
+</tr>
+<tr class="even">
+<td align="left">01-701-1015</td>
+<td align="left">COEQPOMO</td>
+<td align="left">COEQ - Positive Mood</td>
+<td align="right">53.00</td>
+<td align="right">-2</td>
+<td align="left">Screening 2</td>
+</tr>
+<tr class="odd">
+<td align="left">01-701-1015</td>
+<td align="left">COEQCRCO</td>
+<td align="left">COEQ - Craving Control</td>
+<td align="right">37.80</td>
+<td align="right">1</td>
+<td align="left">Baseline</td>
+</tr>
+<tr class="even">
+<td align="left">01-701-1015</td>
+<td align="left">COEQCRSA</td>
+<td align="left">COEQ - Craving for Savoury</td>
+<td align="right">47.75</td>
+<td align="right">1</td>
+<td align="left">Baseline</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="adcoeq_end" class="section level2">
+<h2>Remaining ADCOEQ Set-up</h2>
+<p>The <code>{admiral}</code> <a href="https://pharmaverse.github.io/admiral/articles/questionnaires.html">Creating
+Questionnaire ADaMs vignette</a> describes further steps, including, how
+to calculate the change from baseline variables, and how to add
+parameters for questionnaire completion.</p>
+</div>
+</div>
+<div id="example" class="section level1">
+<h1>Example Scripts</h1>
+<table>
+<colgroup>
+<col width="22%" />
+<col width="77%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>ADaM</th>
+<th>Sample Code</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>ADCOEQ</td>
+<td><a href="https://github.com/pharmaverse/admiralmetabolic/blob/main/inst/templates/ad_adcoeq.R" target="_blank">ad_adcoeq.R</a></td>
+</tr>
+</tbody>
+</table>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
