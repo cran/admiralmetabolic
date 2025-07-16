@@ -14,33 +14,26 @@ library(dplyr)
 library(stringr)
 
 ## ----message=FALSE, warning=FALSE---------------------------------------------
-dm_metabolic <- admiralmetabolic::dm_metabolic
-qs_metabolic <- admiralmetabolic::qs_metabolic
-admiral_adsl <- admiral::admiral_adsl
+dm_metabolic <- pharmaversesdtm::dm_metabolic
+qs_metabolic <- pharmaversesdtm::qs_metabolic
+admiralmetabolic_adsl <- admiralmetabolic::admiralmetabolic_adsl
 
 dm <- convert_blanks_to_na(dm_metabolic)
 qs <- convert_blanks_to_na(qs_metabolic)
-admiral_adsl <- convert_blanks_to_na(admiral_adsl)
+adsl <- convert_blanks_to_na(admiralmetabolic_adsl)
 
 ## ----eval=TRUE----------------------------------------------------------------
-# Retrieve required variables from admiral ADSL for this vignette that are not present in DM dataset
-adsl <- dm %>%
-  select(-DOMAIN) %>%
-  mutate(TRT01P = ARM, TRT01A = ACTARM) %>%
-  derive_vars_merged(
-    dataset_add = admiral_adsl,
-    by_vars = exprs(USUBJID),
-    new_vars = exprs(TRTSDT, TRTEDT)
-  )
+adsl_vars <- exprs(TRTSDT, TRTEDT, TRT01P, TRT01A)
+
+adcoeq <- derive_vars_merged(
+  qs,
+  dataset_add = adsl,
+  new_vars = adsl_vars,
+  by_vars = exprs(STUDYID, USUBJID)
+)
 
 ## ----eval=TRUE----------------------------------------------------------------
-adcoeq1 <- qs %>%
-  # Add ADSL variables
-  derive_vars_merged(
-    dataset_add = adsl,
-    by_vars = exprs(STUDYID, USUBJID),
-    new_vars = exprs(TRTSDT, TRTEDT, TRT01P, TRT01A)
-  ) %>%
+adcoeq <- adcoeq %>%
   # Add analysis parameter variables
   mutate(
     PARAMCD = QSTESTCD,
@@ -66,12 +59,12 @@ adcoeq1 <- qs %>%
 
 ## ----echo=FALSE---------------------------------------------------------------
 dataset_vignette(
-  arrange(adcoeq1, USUBJID, PARCAT1, ADY, PARAMCD),
+  arrange(adcoeq, USUBJID, PARCAT1, ADY, PARAMCD),
   display_vars = exprs(USUBJID, PARAMCD, PARAM, PARCAT1, QSSTRESN, ADY, AVISIT)
 )
 
 ## ----eval=TRUE----------------------------------------------------------------
-adcoeq2 <- adcoeq1 %>%
+adcoeq <- adcoeq %>%
   # Add analysis value variables
   mutate(
     AVAL = if_else(PARAMCD == "COEQ06", 100 - QSSTRESN, QSSTRESN),
@@ -80,13 +73,13 @@ adcoeq2 <- adcoeq1 %>%
 
 ## ----echo=FALSE---------------------------------------------------------------
 dataset_vignette(
-  arrange(adcoeq2, USUBJID, PARCAT1, ADY, PARAMCD),
+  arrange(adcoeq, USUBJID, PARCAT1, ADY, PARAMCD),
   display_vars = exprs(USUBJID, PARAMCD, PARAM, PARCAT1, QSSTRESN, ADY, AVISIT, AVALC, AVAL),
   filter = PARAMCD %in% c("COEQ01", "COEQ02", "COEQ03", "COEQ04", "COEQ05", "COEQ06", "COEQ07", "COEQ08", "COEQ09", "COEQ20")
 )
 
 ## ----eval=TRUE----------------------------------------------------------------
-adcoeq3 <- adcoeq2 %>%
+adcoeq <- adcoeq %>%
   call_derivation(
     derivation = derive_summary_records,
     variable_params = list(
@@ -123,13 +116,13 @@ adcoeq3 <- adcoeq2 %>%
         )
       )
     ),
-    dataset_add = adcoeq2,
+    dataset_add = adcoeq,
     by_vars = exprs(STUDYID, USUBJID, AVISIT, AVISITN, ADT, ADY, PARCAT1, TRTSDT, TRTEDT, TRT01P, TRT01A)
   )
 
 ## ----echo=FALSE---------------------------------------------------------------
 dataset_vignette(
-  arrange(adcoeq3, USUBJID, ADY, PARAMCD),
+  arrange(adcoeq, USUBJID, ADY, PARAMCD),
   display_vars = exprs(USUBJID, PARAMCD, PARAM, AVAL, ADY, AVISIT),
   filter = PARAMCD %in% c("COEQCRCO", "COEQCRSW", "COEQCRSA", "COEQPOMO")
 )

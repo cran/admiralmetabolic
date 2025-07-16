@@ -60,7 +60,7 @@ div.sourceCode { overflow: auto; }
 }
 @media print {
 pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
 }
 pre.numberSource code
 { counter-reset: source-line 0; }
@@ -379,6 +379,7 @@ format as input unless otherwise specified.</em></p>
 <h1>Programming Workflow</h1>
 <ul>
 <li><a href="#readdata">Read in Data</a></li>
+<li><a href="#derive_core">Derive Core ADLB Variables</a></li>
 <li><a href="#original_items">Original items</a></li>
 <li><a href="#subscales">Derive the four Subscales</a></li>
 <li><a href="#adcoeq_end">Remaining ADCOEQ Set-up</a></li>
@@ -389,64 +390,61 @@ format as input unless otherwise specified.</em></p>
 should be loaded into the global environment. Reading data will usually
 be a company specific process, however, for the purpose of this
 vignette, we will use example data from <code>{pharmaversesdtm}</code>
-and <code>{admiral}</code>. We will utilize <code>DM</code>,
+and <code>{admiralmetabolic}</code>. We will utilize <code>DM</code>,
 <code>QS</code> and <code>ADSL</code>.</p>
-<p>In this vignette we use example data for the CoEQ. The example
-<code>QS</code> data (<code>qs_metabolic</code>) is included in the
-<code>{admiralmetabolic}</code> package.</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a>dm_metabolic <span class="ot">&lt;-</span> admiralmetabolic<span class="sc">::</span>dm_metabolic</span>
-<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>qs_metabolic <span class="ot">&lt;-</span> admiralmetabolic<span class="sc">::</span>qs_metabolic</span>
-<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>admiral_adsl <span class="ot">&lt;-</span> admiral<span class="sc">::</span>admiral_adsl</span>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a>dm_metabolic <span class="ot">&lt;-</span> pharmaversesdtm<span class="sc">::</span>dm_metabolic</span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>qs_metabolic <span class="ot">&lt;-</span> pharmaversesdtm<span class="sc">::</span>qs_metabolic</span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>admiralmetabolic_adsl <span class="ot">&lt;-</span> admiralmetabolic<span class="sc">::</span>admiralmetabolic_adsl</span>
 <span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a></span>
 <span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a>dm <span class="ot">&lt;-</span> <span class="fu">convert_blanks_to_na</span>(dm_metabolic)</span>
 <span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a>qs <span class="ot">&lt;-</span> <span class="fu">convert_blanks_to_na</span>(qs_metabolic)</span>
-<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a>admiral_adsl <span class="ot">&lt;-</span> <span class="fu">convert_blanks_to_na</span>(admiral_adsl)</span></code></pre></div>
-<p>Within this vignette, <code>DM</code> is used as the basis for
-<code>ADSL</code>:</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="co"># Retrieve required variables from admiral ADSL for this vignette that are not present in DM dataset</span></span>
-<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>adsl <span class="ot">&lt;-</span> dm <span class="sc">%&gt;%</span></span>
-<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>DOMAIN) <span class="sc">%&gt;%</span></span>
-<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">TRT01P =</span> ARM, <span class="at">TRT01A =</span> ACTARM) <span class="sc">%&gt;%</span></span>
-<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a>  <span class="fu">derive_vars_merged</span>(</span>
-<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a>    <span class="at">dataset_add =</span> admiral_adsl,</span>
-<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a>    <span class="at">by_vars =</span> <span class="fu">exprs</span>(USUBJID),</span>
-<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a>    <span class="at">new_vars =</span> <span class="fu">exprs</span>(TRTSDT, TRTEDT)</span>
-<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a>  )</span></code></pre></div>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a>adsl <span class="ot">&lt;-</span> <span class="fu">convert_blanks_to_na</span>(admiralmetabolic_adsl)</span></code></pre></div>
+</div>
+<div id="derive_core" class="section level2">
+<h2>Derive Core ADVS Variables</h2>
+<p>The following steps are to merge <code>ADSL</code> variables with the
+source data and derive the usual <code>ADCOEQ</code> analysis variables.
+Note that only the sections required for this vignette are covered in
+the following steps. To get a detailed guidance on all the steps, refer
+the <code>{admiral}</code> <a href="https://pharmaverse.github.io/admiral/articles/bds_finding.html">Creating
+a BDS Finding ADaM vignette</a>.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a>adsl_vars <span class="ot">&lt;-</span> <span class="fu">exprs</span>(TRTSDT, TRTEDT, TRT01P, TRT01A)</span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>adcoeq <span class="ot">&lt;-</span> <span class="fu">derive_vars_merged</span>(</span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a>  qs,</span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a>  <span class="at">dataset_add =</span> adsl,</span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a>  <span class="at">new_vars =</span> adsl_vars,</span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a>  <span class="at">by_vars =</span> <span class="fu">exprs</span>(STUDYID, USUBJID)</span>
+<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a>)</span></code></pre></div>
 </div>
 <div id="original_items" class="section level2">
 <h2>Original Items</h2>
 <p>The original items, i.e. the answers to the questionnaire questions,
 can be handled in the same way as in an <a href="https://pharmaverse.github.io/admiral/articles/bds_finding.html">{admiral}
 BDS finding ADaM</a>.</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a>adcoeq1 <span class="ot">&lt;-</span> qs <span class="sc">%&gt;%</span></span>
-<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>  <span class="co"># Add ADSL variables</span></span>
-<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>  <span class="fu">derive_vars_merged</span>(</span>
-<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>    <span class="at">dataset_add =</span> adsl,</span>
-<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a>    <span class="at">by_vars =</span> <span class="fu">exprs</span>(STUDYID, USUBJID),</span>
-<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a>    <span class="at">new_vars =</span> <span class="fu">exprs</span>(TRTSDT, TRTEDT, TRT01P, TRT01A)</span>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a>adcoeq <span class="ot">&lt;-</span> adcoeq <span class="sc">%&gt;%</span></span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>  <span class="co"># Add analysis parameter variables</span></span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>    <span class="at">PARAMCD =</span> QSTESTCD,</span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a>    <span class="at">PARAM =</span> QSTEST,</span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a>    <span class="at">PARCAT1 =</span> QSCAT</span>
 <span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
-<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a>  <span class="co"># Add analysis parameter variables</span></span>
-<span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
-<span id="cb4-10"><a href="#cb4-10" tabindex="-1"></a>    <span class="at">PARAMCD =</span> QSTESTCD,</span>
-<span id="cb4-11"><a href="#cb4-11" tabindex="-1"></a>    <span class="at">PARAM =</span> QSTEST,</span>
-<span id="cb4-12"><a href="#cb4-12" tabindex="-1"></a>    <span class="at">PARCAT1 =</span> QSCAT</span>
-<span id="cb4-13"><a href="#cb4-13" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
-<span id="cb4-14"><a href="#cb4-14" tabindex="-1"></a>  <span class="co"># Add timing variables</span></span>
-<span id="cb4-15"><a href="#cb4-15" tabindex="-1"></a>  <span class="fu">derive_vars_dt</span>(<span class="at">new_vars_prefix =</span> <span class="st">&quot;A&quot;</span>, <span class="at">dtc =</span> QSDTC) <span class="sc">%&gt;%</span></span>
-<span id="cb4-16"><a href="#cb4-16" tabindex="-1"></a>  <span class="fu">derive_vars_dy</span>(<span class="at">reference_date =</span> TRTSDT, <span class="at">source_vars =</span> <span class="fu">exprs</span>(ADT)) <span class="sc">%&gt;%</span></span>
-<span id="cb4-17"><a href="#cb4-17" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
-<span id="cb4-18"><a href="#cb4-18" tabindex="-1"></a>    <span class="at">AVISIT =</span> <span class="fu">case_when</span>(</span>
-<span id="cb4-19"><a href="#cb4-19" tabindex="-1"></a>      <span class="fu">is.na</span>(VISIT) <span class="sc">~</span> <span class="cn">NA_character_</span>,</span>
-<span id="cb4-20"><a href="#cb4-20" tabindex="-1"></a>      <span class="fu">str_detect</span>(VISIT, <span class="st">&quot;UNSCHED|RETRIEVAL|AMBUL&quot;</span>) <span class="sc">~</span> <span class="cn">NA_character_</span>,</span>
-<span id="cb4-21"><a href="#cb4-21" tabindex="-1"></a>      <span class="cn">TRUE</span> <span class="sc">~</span> <span class="fu">str_to_title</span>(VISIT)</span>
-<span id="cb4-22"><a href="#cb4-22" tabindex="-1"></a>    ),</span>
-<span id="cb4-23"><a href="#cb4-23" tabindex="-1"></a>    <span class="at">AVISITN =</span> <span class="fu">case_when</span>(</span>
-<span id="cb4-24"><a href="#cb4-24" tabindex="-1"></a>      AVISIT <span class="sc">==</span> <span class="st">&quot;Baseline&quot;</span> <span class="sc">~</span> <span class="dv">0</span>,</span>
-<span id="cb4-25"><a href="#cb4-25" tabindex="-1"></a>      <span class="fu">str_detect</span>(AVISIT, <span class="st">&quot;Screen&quot;</span>) <span class="sc">~</span> <span class="sc">-</span><span class="dv">1</span>,</span>
-<span id="cb4-26"><a href="#cb4-26" tabindex="-1"></a>      <span class="fu">str_detect</span>(VISIT, <span class="st">&quot;WEEK&quot;</span>) <span class="sc">~</span> <span class="fu">as.integer</span>(<span class="fu">str_extract</span>(VISIT, <span class="st">&quot;</span><span class="sc">\\</span><span class="st">d+&quot;</span>)),</span>
-<span id="cb4-27"><a href="#cb4-27" tabindex="-1"></a>      <span class="cn">TRUE</span> <span class="sc">~</span> <span class="cn">NA_integer_</span></span>
-<span id="cb4-28"><a href="#cb4-28" tabindex="-1"></a>    )</span>
-<span id="cb4-29"><a href="#cb4-29" tabindex="-1"></a>  )</span></code></pre></div>
+<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a>  <span class="co"># Add timing variables</span></span>
+<span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a>  <span class="fu">derive_vars_dt</span>(<span class="at">new_vars_prefix =</span> <span class="st">&quot;A&quot;</span>, <span class="at">dtc =</span> QSDTC) <span class="sc">%&gt;%</span></span>
+<span id="cb4-10"><a href="#cb4-10" tabindex="-1"></a>  <span class="fu">derive_vars_dy</span>(<span class="at">reference_date =</span> TRTSDT, <span class="at">source_vars =</span> <span class="fu">exprs</span>(ADT)) <span class="sc">%&gt;%</span></span>
+<span id="cb4-11"><a href="#cb4-11" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb4-12"><a href="#cb4-12" tabindex="-1"></a>    <span class="at">AVISIT =</span> <span class="fu">case_when</span>(</span>
+<span id="cb4-13"><a href="#cb4-13" tabindex="-1"></a>      <span class="fu">is.na</span>(VISIT) <span class="sc">~</span> <span class="cn">NA_character_</span>,</span>
+<span id="cb4-14"><a href="#cb4-14" tabindex="-1"></a>      <span class="fu">str_detect</span>(VISIT, <span class="st">&quot;UNSCHED|RETRIEVAL|AMBUL&quot;</span>) <span class="sc">~</span> <span class="cn">NA_character_</span>,</span>
+<span id="cb4-15"><a href="#cb4-15" tabindex="-1"></a>      <span class="cn">TRUE</span> <span class="sc">~</span> <span class="fu">str_to_title</span>(VISIT)</span>
+<span id="cb4-16"><a href="#cb4-16" tabindex="-1"></a>    ),</span>
+<span id="cb4-17"><a href="#cb4-17" tabindex="-1"></a>    <span class="at">AVISITN =</span> <span class="fu">case_when</span>(</span>
+<span id="cb4-18"><a href="#cb4-18" tabindex="-1"></a>      AVISIT <span class="sc">==</span> <span class="st">&quot;Baseline&quot;</span> <span class="sc">~</span> <span class="dv">0</span>,</span>
+<span id="cb4-19"><a href="#cb4-19" tabindex="-1"></a>      <span class="fu">str_detect</span>(AVISIT, <span class="st">&quot;Screen&quot;</span>) <span class="sc">~</span> <span class="sc">-</span><span class="dv">1</span>,</span>
+<span id="cb4-20"><a href="#cb4-20" tabindex="-1"></a>      <span class="fu">str_detect</span>(VISIT, <span class="st">&quot;WEEK&quot;</span>) <span class="sc">~</span> <span class="fu">as.integer</span>(<span class="fu">str_extract</span>(VISIT, <span class="st">&quot;</span><span class="sc">\\</span><span class="st">d+&quot;</span>)),</span>
+<span id="cb4-21"><a href="#cb4-21" tabindex="-1"></a>      <span class="cn">TRUE</span> <span class="sc">~</span> <span class="cn">NA_integer_</span></span>
+<span id="cb4-22"><a href="#cb4-22" tabindex="-1"></a>    )</span>
+<span id="cb4-23"><a href="#cb4-23" tabindex="-1"></a>  )</span></code></pre></div>
 <table>
 <colgroup>
 <col width="10%" />
@@ -572,7 +570,7 @@ original scores indicate anxiety.</p>
 <p>In cases where <code>QSSTRESN</code> values require transformation,
 it is recommended to keep the original <code>QSSTRESN</code> values in
 the ADaM dataset for traceability.</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a>adcoeq2 <span class="ot">&lt;-</span> adcoeq1 <span class="sc">%&gt;%</span></span>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a>adcoeq <span class="ot">&lt;-</span> adcoeq <span class="sc">%&gt;%</span></span>
 <span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>  <span class="co"># Add analysis value variables</span></span>
 <span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
 <span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a>    <span class="at">AVAL =</span> <span class="fu">if_else</span>(PARAMCD <span class="sc">==</span> <span class="st">&quot;COEQ06&quot;</span>, <span class="dv">100</span> <span class="sc">-</span> QSSTRESN, QSSTRESN),</span>
@@ -740,7 +738,7 @@ items/questions.</p>
 </ul>
 <p>These parameters can be derived by
 <code>derive_summary_records()</code>:</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a>adcoeq3 <span class="ot">&lt;-</span> adcoeq2 <span class="sc">%&gt;%</span></span>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a>adcoeq <span class="ot">&lt;-</span> adcoeq <span class="sc">%&gt;%</span></span>
 <span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>  <span class="fu">call_derivation</span>(</span>
 <span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a>    <span class="at">derivation =</span> derive_summary_records,</span>
 <span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a>    <span class="at">variable_params =</span> <span class="fu">list</span>(</span>
@@ -777,7 +775,7 @@ items/questions.</p>
 <span id="cb6-35"><a href="#cb6-35" tabindex="-1"></a>        )</span>
 <span id="cb6-36"><a href="#cb6-36" tabindex="-1"></a>      )</span>
 <span id="cb6-37"><a href="#cb6-37" tabindex="-1"></a>    ),</span>
-<span id="cb6-38"><a href="#cb6-38" tabindex="-1"></a>    <span class="at">dataset_add =</span> adcoeq2,</span>
+<span id="cb6-38"><a href="#cb6-38" tabindex="-1"></a>    <span class="at">dataset_add =</span> adcoeq,</span>
 <span id="cb6-39"><a href="#cb6-39" tabindex="-1"></a>    <span class="at">by_vars =</span> <span class="fu">exprs</span>(STUDYID, USUBJID, AVISIT, AVISITN, ADT, ADY, PARCAT1, TRTSDT, TRTEDT, TRT01P, TRT01A)</span>
 <span id="cb6-40"><a href="#cb6-40" tabindex="-1"></a>  )</span></code></pre></div>
 <table>

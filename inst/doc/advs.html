@@ -60,7 +60,7 @@ div.sourceCode { overflow: auto; }
 }
 @media print {
 pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
 }
 pre.numberSource code
 { counter-reset: source-line 0; }
@@ -366,6 +366,7 @@ to view the full workflow.</p>
 <h1>Programming Workflow</h1>
 <ul>
 <li><a href="#readdata">Read in Data</a></li>
+<li><a href="#derive_core">Derive Core ADLB Variables</a></li>
 <li><a href="#paramcd">Assign <code>PARAMCD</code>, <code>PARAM</code>,
 <code>PARAMN</code>, <code>PARCAT1</code></a></li>
 <li><a href="#derive_param">Derive Metabolic Parameters</a>
@@ -388,29 +389,36 @@ to view the full workflow.</p>
 <code>ADVS</code> should be loaded into the global environment. Reading
 data will usually be a company specific process, however, for the
 purpose of this vignette, we will use example data from
-<code>{pharmaversesdtm}</code> and <code>{admiral}</code>. We will
-utilize <code>DM</code>, <code>VS</code> and <code>ADSL</code> for the
-basis of <code>ADVS</code>.</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a>dm_metabolic <span class="ot">&lt;-</span> admiralmetabolic<span class="sc">::</span>dm_metabolic</span>
-<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>vs_metabolic <span class="ot">&lt;-</span> admiralmetabolic<span class="sc">::</span>vs_metabolic</span>
-<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>admiral_adsl <span class="ot">&lt;-</span> admiral<span class="sc">::</span>admiral_adsl</span>
+<code>{pharmaversesdtm}</code> and <code>{admiralmetabolic}</code>. We
+will utilize <code>DM</code>, <code>VS</code> and <code>ADSL</code> for
+the basis of <code>ADVS</code>.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a>dm_metabolic <span class="ot">&lt;-</span> pharmaversesdtm<span class="sc">::</span>dm_metabolic</span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>vs_metabolic <span class="ot">&lt;-</span> pharmaversesdtm<span class="sc">::</span>vs_metabolic</span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>admiralmetabolic_adsl <span class="ot">&lt;-</span> admiralmetabolic<span class="sc">::</span>admiralmetabolic_adsl</span>
 <span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a></span>
 <span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a>dm <span class="ot">&lt;-</span> <span class="fu">convert_blanks_to_na</span>(dm_metabolic)</span>
 <span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a>vs <span class="ot">&lt;-</span> <span class="fu">convert_blanks_to_na</span>(vs_metabolic)</span>
-<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a>admiral_adsl <span class="ot">&lt;-</span> <span class="fu">convert_blanks_to_na</span>(admiral_adsl)</span></code></pre></div>
-<p>Within this vignette, <code>DM</code> is used as the basis for
-<code>ADSL</code>:</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="co"># Retrieve required variables from admiral ADSL for this vignette that are not present in DM dataset</span></span>
-<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>adsl <span class="ot">&lt;-</span> dm <span class="sc">%&gt;%</span></span>
-<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>DOMAIN) <span class="sc">%&gt;%</span></span>
-<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">TRT01P =</span> ARM, <span class="at">TRT01A =</span> ACTARM) <span class="sc">%&gt;%</span></span>
-<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a>  <span class="fu">left_join</span>(admiral_adsl <span class="sc">%&gt;%</span> <span class="fu">select</span>(USUBJID, TRTSDT, TRTEDT), <span class="at">by =</span> <span class="st">&quot;USUBJID&quot;</span>)</span></code></pre></div>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a>adsl <span class="ot">&lt;-</span> <span class="fu">convert_blanks_to_na</span>(admiralmetabolic_adsl)</span></code></pre></div>
+</div>
+<div id="derive_core" class="section level2">
+<h2>Derive Core ADVS Variables</h2>
 <p>The following steps are to merge <code>ADSL</code> variables with the
 source data and derive the usual <code>ADVS</code> analysis variables.
 Note that only the sections required for this vignette are covered in
 the following steps. To get a detailed guidance on all the steps, refer
 the <code>{admiral}</code> <a href="https://pharmaverse.github.io/admiral/articles/bds_finding.html">Creating
 a BDS Finding ADaM vignette</a>.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a>adsl_vars <span class="ot">&lt;-</span> <span class="fu">exprs</span>(TRTSDT, TRTEDT, TRT01P, TRT01A)</span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>advs <span class="ot">&lt;-</span> <span class="fu">derive_vars_merged</span>(</span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a>  vs,</span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a>  <span class="at">dataset_add =</span> adsl,</span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a>  <span class="at">new_vars =</span> adsl_vars,</span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a>  <span class="at">by_vars =</span> <span class="fu">exprs</span>(STUDYID, USUBJID)</span>
+<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a>)</span>
+<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a></span>
+<span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a>advs <span class="ot">&lt;-</span> <span class="fu">derive_vars_dt</span>(advs, <span class="at">new_vars_prefix =</span> <span class="st">&quot;A&quot;</span>, <span class="at">dtc =</span> VSDTC)</span>
+<span id="cb3-11"><a href="#cb3-11" tabindex="-1"></a>advs <span class="ot">&lt;-</span> <span class="fu">derive_vars_dy</span>(advs, <span class="at">reference_date =</span> TRTSDT, <span class="at">source_vars =</span> <span class="fu">exprs</span>(ADT))</span></code></pre></div>
 </div>
 <div id="paramcd" class="section level2">
 <h2>Create <code>PARAMCD</code>, <code>PARAM</code>,

@@ -13,22 +13,15 @@ library(pharmaversesdtm)
 library(dplyr)
 
 ## ----message=FALSE, warning=FALSE---------------------------------------------
-dm_metabolic <- admiralmetabolic::dm_metabolic
-vs_metabolic <- admiralmetabolic::vs_metabolic
-admiral_adsl <- admiral::admiral_adsl
+dm_metabolic <- pharmaversesdtm::dm_metabolic
+vs_metabolic <- pharmaversesdtm::vs_metabolic
+admiralmetabolic_adsl <- admiralmetabolic::admiralmetabolic_adsl
 
 dm <- convert_blanks_to_na(dm_metabolic)
 vs <- convert_blanks_to_na(vs_metabolic)
-admiral_adsl <- convert_blanks_to_na(admiral_adsl)
+adsl <- convert_blanks_to_na(admiralmetabolic_adsl)
 
 ## ----eval=TRUE----------------------------------------------------------------
-# Retrieve required variables from admiral ADSL for this vignette that are not present in DM dataset
-adsl <- dm %>%
-  select(-DOMAIN) %>%
-  mutate(TRT01P = ARM, TRT01A = ACTARM) %>%
-  left_join(admiral_adsl %>% select(USUBJID, TRTSDT, TRTEDT), by = "USUBJID")
-
-## ----eval=TRUE, include=FALSE-------------------------------------------------
 adsl_vars <- exprs(TRTSDT, TRTEDT, TRT01P, TRT01A)
 
 advs <- derive_vars_merged(
@@ -39,8 +32,7 @@ advs <- derive_vars_merged(
 )
 
 advs <- derive_vars_dt(advs, new_vars_prefix = "A", dtc = VSDTC)
-advs <-
-  derive_vars_dy(advs, reference_date = TRTSDT, source_vars = exprs(ADT))
+advs <- derive_vars_dy(advs, reference_date = TRTSDT, source_vars = exprs(ADT))
 
 ## ----echo=TRUE, message=FALSE-------------------------------------------------
 param_lookup <- tribble(

@@ -1,0 +1,1387 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+
+
+<title>Creating a Metabolic ADLB ADaM</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Creating a Metabolic ADLB ADaM</h1>
+
+
+
+<div id="introduction" class="section level1">
+<h1>Introduction</h1>
+<p>This article describes creating a laboratory ADaM for metabolic
+clinical trials.</p>
+<p>We advise you first consult the <code>{admiral}</code> <a href="https://pharmaverse.github.io/admiral/articles/bds_finding.html">Creating
+a BDS Finding ADaM vignette</a>. The programming workflow around
+creating the general set-up of an <code>ADLB</code> using
+<code>{admiral}</code> functions is the same. In this vignette, we focus
+on common ADLB derivations in metabolic studies and avoid repeating
+information and maintaining the same content in two places.</p>
+<p><strong>Note</strong>: <em>All examples assume CDISC SDTM and/or ADaM
+format as input unless otherwise specified.</em></p>
+<div id="required-packages" class="section level2">
+<h2>Required Packages</h2>
+<p>The examples of this vignette require the following packages.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(admiral)</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">library</span>(admiralmetabolic)</span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="fu">library</span>(pharmaversesdtm)</span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a><span class="fu">library</span>(stringr)</span></code></pre></div>
+</div>
+</div>
+<div id="programming-workflow" class="section level1">
+<h1>Programming Workflow</h1>
+<ul>
+<li><a href="#readdata">Read in Data</a></li>
+<li><a href="#lookups">Define Lookup Tables</a></li>
+<li><a href="#derive_core">Derive Core ADLB Variables</a></li>
+<li><a href="#derive_visits">Derive Visit Information</a></li>
+<li><a href="#metabolic_params_desc">Derive Metabolic Parameters</a>
+<ul>
+<li><a href="#merge">Add variables required for derivation</a></li>
+<li><a href="#derive_homa">Derive HOMA-IR index</a></li>
+<li><a href="#derive_fli">Derive FLI score</a></li>
+</ul></li>
+<li><a href="#adlb_end">Remaining ADLB Set-up</a></li>
+<li><a href="#example">Example Script</a></li>
+</ul>
+<div id="readdata" class="section level2">
+<h2>Read in Data</h2>
+<p>To start, all data frames needed for the creation of the ADaM dataset
+should be loaded into the global environment. Reading data will usually
+be a company specific process, however, for the purpose of this
+vignette, we will use example data from <code>{pharmaversesdtm}</code>
+and <code>{admiralmetabolic}</code>. We will utilize <code>LB</code> and
+<code>ADSL</code> data.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a>lb_metabolic <span class="ot">&lt;-</span> pharmaversesdtm<span class="sc">::</span>lb_metabolic</span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>admiralmetabolic_adsl <span class="ot">&lt;-</span> admiralmetabolic<span class="sc">::</span>admiralmetabolic_adsl</span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>lb <span class="ot">&lt;-</span> <span class="fu">convert_blanks_to_na</span>(lb_metabolic)</span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a>adsl <span class="ot">&lt;-</span> <span class="fu">convert_blanks_to_na</span>(admiralmetabolic_adsl)</span></code></pre></div>
+</div>
+<div id="lookups" class="section level2">
+<h2>Define Lookup Tables</h2>
+<p>Define parameter lookup table used to derive <code>PARAMCD</code>,
+<code>PARAM</code>, and <code>PARAMN</code> variables.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="co"># Assign PARAMCD, PARAM, and PARAMN</span></span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>param_lookup <span class="ot">&lt;-</span> tibble<span class="sc">::</span><span class="fu">tribble</span>(</span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>  <span class="sc">~</span>LBTESTCD, <span class="sc">~</span>PARAMCD, <span class="sc">~</span>PARAM, <span class="sc">~</span>PARAMN,</span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a>  <span class="st">&quot;ALB&quot;</span>, <span class="st">&quot;ALB&quot;</span>, <span class="st">&quot;Albumin (g/L)&quot;</span>, <span class="dv">1</span>,</span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a>  <span class="st">&quot;ALP&quot;</span>, <span class="st">&quot;ALKPH&quot;</span>, <span class="st">&quot;Alkaline Phosphatase (U/L)&quot;</span>, <span class="dv">2</span>,</span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a>  <span class="st">&quot;AST&quot;</span>, <span class="st">&quot;AST&quot;</span>, <span class="st">&quot;Aspartate Aminotransferase (U/L)&quot;</span>, <span class="dv">3</span>,</span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a>  <span class="st">&quot;CHOL&quot;</span>, <span class="st">&quot;CHOLES&quot;</span>, <span class="st">&quot;Cholesterol (mmol/L)&quot;</span>, <span class="dv">4</span>,</span>
+<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a>  <span class="st">&quot;GGT&quot;</span>, <span class="st">&quot;GGT&quot;</span>, <span class="st">&quot;Gamma Glutamyl Transferase (U/L)&quot;</span>, <span class="dv">5</span>,</span>
+<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a>  <span class="st">&quot;GLUC&quot;</span>, <span class="st">&quot;GLUC&quot;</span>, <span class="st">&quot;Glucose (mmol/L)&quot;</span>, <span class="dv">6</span>,</span>
+<span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a>  <span class="st">&quot;HBA1CHGB&quot;</span>, <span class="st">&quot;HBA1CHGB&quot;</span>, <span class="st">&quot;Hemoglobin A1C/Hemoglobin (mmol/mol)&quot;</span>, <span class="dv">7</span>,</span>
+<span id="cb3-11"><a href="#cb3-11" tabindex="-1"></a>  <span class="st">&quot;INSULIN&quot;</span>, <span class="st">&quot;INSULIN&quot;</span>, <span class="st">&quot;Insulin (mIU/L)&quot;</span>, <span class="dv">8</span>,</span>
+<span id="cb3-12"><a href="#cb3-12" tabindex="-1"></a>  <span class="st">&quot;TRIG&quot;</span>, <span class="st">&quot;TRIG&quot;</span>, <span class="st">&quot;Triglycerides (mg/dL)&quot;</span>, <span class="dv">9</span></span>
+<span id="cb3-13"><a href="#cb3-13" tabindex="-1"></a>)</span></code></pre></div>
+</div>
+<div id="derive_core" class="section level2">
+<h2>Derive Core ADLB Variables</h2>
+<p>The basic parameters and timing variables can be derived similarly to
+other BDS finding ADaMs. For the derivation of Glucose and Insulin, only
+fasted results (where <code>LBFAST = &quot;Y&quot;</code>) are considered. For all
+other laboratory tests, the fasting status does not affect their
+inclusion in the dataset at this stage.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="co"># Define required ADSL variables for derivations</span></span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>adsl_vars <span class="ot">&lt;-</span> <span class="fu">exprs</span>(TRTSDT, TRTEDT, TRT01A, TRT01P)</span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>adlb <span class="ot">&lt;-</span> lb <span class="sc">%&gt;%</span></span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a>  <span class="co"># Remove non-fasted GLUC and INSULIN results</span></span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span>(LBTESTCD <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">&quot;GLUC&quot;</span>, <span class="st">&quot;INSULIN&quot;</span>) <span class="sc">&amp;</span> LBFAST <span class="sc">!=</span> <span class="st">&quot;Y&quot;</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a>  <span class="co"># Join ADSL with LB (need TRTSDT for ADY derivation)</span></span>
+<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a>  <span class="fu">derive_vars_merged</span>(</span>
+<span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a>    <span class="at">dataset_add =</span> adsl,</span>
+<span id="cb4-10"><a href="#cb4-10" tabindex="-1"></a>    <span class="at">new_vars =</span> adsl_vars,</span>
+<span id="cb4-11"><a href="#cb4-11" tabindex="-1"></a>    <span class="at">by_vars =</span> <span class="fu">get_admiral_option</span>(<span class="st">&quot;subject_keys&quot;</span>)</span>
+<span id="cb4-12"><a href="#cb4-12" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb4-13"><a href="#cb4-13" tabindex="-1"></a>  <span class="co"># Calculate ADT, ADY</span></span>
+<span id="cb4-14"><a href="#cb4-14" tabindex="-1"></a>  <span class="fu">derive_vars_dt</span>(</span>
+<span id="cb4-15"><a href="#cb4-15" tabindex="-1"></a>    <span class="at">new_vars_prefix =</span> <span class="st">&quot;A&quot;</span>,</span>
+<span id="cb4-16"><a href="#cb4-16" tabindex="-1"></a>    <span class="at">dtc =</span> LBDTC</span>
+<span id="cb4-17"><a href="#cb4-17" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb4-18"><a href="#cb4-18" tabindex="-1"></a>  <span class="fu">derive_vars_dy</span>(<span class="at">reference_date =</span> TRTSDT, <span class="at">source_vars =</span> <span class="fu">exprs</span>(ADT))</span>
+<span id="cb4-19"><a href="#cb4-19" tabindex="-1"></a></span>
+<span id="cb4-20"><a href="#cb4-20" tabindex="-1"></a>adlb <span class="ot">&lt;-</span> adlb <span class="sc">%&gt;%</span></span>
+<span id="cb4-21"><a href="#cb4-21" tabindex="-1"></a>  <span class="co"># Add PARAMCD PARAM and PARAMN - from parameter lookup table</span></span>
+<span id="cb4-22"><a href="#cb4-22" tabindex="-1"></a>  <span class="fu">derive_vars_merged_lookup</span>(</span>
+<span id="cb4-23"><a href="#cb4-23" tabindex="-1"></a>    <span class="at">dataset_add =</span> param_lookup,</span>
+<span id="cb4-24"><a href="#cb4-24" tabindex="-1"></a>    <span class="at">new_vars =</span> <span class="fu">exprs</span>(PARAMCD, PARAM, PARAMN),</span>
+<span id="cb4-25"><a href="#cb4-25" tabindex="-1"></a>    <span class="at">by_vars =</span> <span class="fu">exprs</span>(LBTESTCD)</span>
+<span id="cb4-26"><a href="#cb4-26" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb4-27"><a href="#cb4-27" tabindex="-1"></a>  <span class="do">## Calculate PARCAT1 PARCAT2 AVAL AVALC ANRLO ANRHI</span></span>
+<span id="cb4-28"><a href="#cb4-28" tabindex="-1"></a>  <span class="fu">slice_derivation</span>(</span>
+<span id="cb4-29"><a href="#cb4-29" tabindex="-1"></a>    <span class="at">derivation =</span> mutate,</span>
+<span id="cb4-30"><a href="#cb4-30" tabindex="-1"></a>    <span class="at">args =</span> <span class="fu">params</span>(</span>
+<span id="cb4-31"><a href="#cb4-31" tabindex="-1"></a>      <span class="at">PARCAT1 =</span> LBCAT,</span>
+<span id="cb4-32"><a href="#cb4-32" tabindex="-1"></a>    ),</span>
+<span id="cb4-33"><a href="#cb4-33" tabindex="-1"></a>    <span class="co"># Handle specific parameters requiring conventional units (CV)</span></span>
+<span id="cb4-34"><a href="#cb4-34" tabindex="-1"></a>    <span class="fu">derivation_slice</span>(</span>
+<span id="cb4-35"><a href="#cb4-35" tabindex="-1"></a>      <span class="at">filter =</span> LBTESTCD <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">&quot;TRIG&quot;</span>, <span class="st">&quot;INSULIN&quot;</span>),</span>
+<span id="cb4-36"><a href="#cb4-36" tabindex="-1"></a>      <span class="at">args =</span> <span class="fu">params</span>(</span>
+<span id="cb4-37"><a href="#cb4-37" tabindex="-1"></a>        <span class="at">PARCAT2 =</span> <span class="st">&quot;CV&quot;</span>,</span>
+<span id="cb4-38"><a href="#cb4-38" tabindex="-1"></a>        <span class="at">AVAL =</span> <span class="fu">as.numeric</span>(LBORRES),</span>
+<span id="cb4-39"><a href="#cb4-39" tabindex="-1"></a>        <span class="at">AVALC =</span> <span class="cn">NA_character_</span>,</span>
+<span id="cb4-40"><a href="#cb4-40" tabindex="-1"></a>        <span class="at">ANRLO =</span> <span class="fu">as.numeric</span>(LBORNRLO),</span>
+<span id="cb4-41"><a href="#cb4-41" tabindex="-1"></a>        <span class="at">ANRHI =</span> <span class="fu">as.numeric</span>(LBORNRHI)</span>
+<span id="cb4-42"><a href="#cb4-42" tabindex="-1"></a>      )</span>
+<span id="cb4-43"><a href="#cb4-43" tabindex="-1"></a>    ),</span>
+<span id="cb4-44"><a href="#cb4-44" tabindex="-1"></a>    <span class="co"># Handle other parameters using standard units (SI)</span></span>
+<span id="cb4-45"><a href="#cb4-45" tabindex="-1"></a>    <span class="fu">derivation_slice</span>(</span>
+<span id="cb4-46"><a href="#cb4-46" tabindex="-1"></a>      <span class="at">filter =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb4-47"><a href="#cb4-47" tabindex="-1"></a>      <span class="at">args =</span> <span class="fu">params</span>(</span>
+<span id="cb4-48"><a href="#cb4-48" tabindex="-1"></a>        <span class="at">PARCAT2 =</span> <span class="st">&quot;SI&quot;</span>,</span>
+<span id="cb4-49"><a href="#cb4-49" tabindex="-1"></a>        <span class="at">AVAL =</span> LBSTRESN,</span>
+<span id="cb4-50"><a href="#cb4-50" tabindex="-1"></a>        <span class="co"># Only populate AVALC if character value is non-redundant with AVAL</span></span>
+<span id="cb4-51"><a href="#cb4-51" tabindex="-1"></a>        <span class="at">AVALC =</span> <span class="fu">if_else</span>(</span>
+<span id="cb4-52"><a href="#cb4-52" tabindex="-1"></a>          <span class="fu">is.na</span>(AVAL) <span class="sc">|</span> <span class="fu">as.character</span>(AVAL) <span class="sc">!=</span> LBSTRESC,</span>
+<span id="cb4-53"><a href="#cb4-53" tabindex="-1"></a>          LBSTRESC,</span>
+<span id="cb4-54"><a href="#cb4-54" tabindex="-1"></a>          <span class="cn">NA_character_</span></span>
+<span id="cb4-55"><a href="#cb4-55" tabindex="-1"></a>        ),</span>
+<span id="cb4-56"><a href="#cb4-56" tabindex="-1"></a>        <span class="at">ANRLO =</span> LBSTNRLO,</span>
+<span id="cb4-57"><a href="#cb4-57" tabindex="-1"></a>        <span class="at">ANRHI =</span> LBSTNRHI</span>
+<span id="cb4-58"><a href="#cb4-58" tabindex="-1"></a>      )</span>
+<span id="cb4-59"><a href="#cb4-59" tabindex="-1"></a>    )</span>
+<span id="cb4-60"><a href="#cb4-60" tabindex="-1"></a>  )</span>
+<span id="cb4-61"><a href="#cb4-61" tabindex="-1"></a><span class="co">#&gt; All `LBTESTCD` are mapped.</span></span></code></pre></div>
+<table>
+<colgroup>
+<col width="8%" />
+<col width="8%" />
+<col width="7%" />
+<col width="2%" />
+<col width="6%" />
+<col width="25%" />
+<col width="4%" />
+<col width="6%" />
+<col width="5%" />
+<col width="6%" />
+<col width="4%" />
+<col width="6%" />
+<col width="6%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">STUDYID</th>
+<th align="left">USUBJID</th>
+<th align="left">ADT</th>
+<th align="right">ADY</th>
+<th align="left">PARAMCD</th>
+<th align="left">PARAM</th>
+<th align="right">PARAMN</th>
+<th align="left">PARCAT1</th>
+<th align="left">PARCAT2</th>
+<th align="right">AVAL</th>
+<th align="left">AVALC</th>
+<th align="right">ANRLO</th>
+<th align="right">ANRHI</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">CDISCPILOT01</td>
+<td align="left">01-701-1015</td>
+<td align="left">2013-12-26</td>
+<td align="right">-7</td>
+<td align="left">ALB</td>
+<td align="left">Albumin (g/L)</td>
+<td align="right">1</td>
+<td align="left">CHEMISTRY</td>
+<td align="left">SI</td>
+<td align="right">38.00000</td>
+<td align="left">NA</td>
+<td align="right">33.00000</td>
+<td align="right">49.00000</td>
+</tr>
+<tr class="even">
+<td align="left">CDISCPILOT01</td>
+<td align="left">01-701-1015</td>
+<td align="left">2013-12-26</td>
+<td align="right">-7</td>
+<td align="left">ALKPH</td>
+<td align="left">Alkaline Phosphatase (U/L)</td>
+<td align="right">2</td>
+<td align="left">CHEMISTRY</td>
+<td align="left">SI</td>
+<td align="right">34.00000</td>
+<td align="left">NA</td>
+<td align="right">35.00000</td>
+<td align="right">115.00000</td>
+</tr>
+<tr class="odd">
+<td align="left">CDISCPILOT01</td>
+<td align="left">01-701-1015</td>
+<td align="left">2013-12-26</td>
+<td align="right">-7</td>
+<td align="left">AST</td>
+<td align="left">Aspartate Aminotransferase (U/L)</td>
+<td align="right">3</td>
+<td align="left">CHEMISTRY</td>
+<td align="left">SI</td>
+<td align="right">40.00000</td>
+<td align="left">NA</td>
+<td align="right">9.00000</td>
+<td align="right">34.00000</td>
+</tr>
+<tr class="even">
+<td align="left">CDISCPILOT01</td>
+<td align="left">01-701-1015</td>
+<td align="left">2013-12-26</td>
+<td align="right">-7</td>
+<td align="left">CHOLES</td>
+<td align="left">Cholesterol (mmol/L)</td>
+<td align="right">4</td>
+<td align="left">CHEMISTRY</td>
+<td align="left">SI</td>
+<td align="right">5.94780</td>
+<td align="left">NA</td>
+<td align="right">4.03000</td>
+<td align="right">7.76000</td>
+</tr>
+<tr class="odd">
+<td align="left">CDISCPILOT01</td>
+<td align="left">01-701-1015</td>
+<td align="left">2013-12-26</td>
+<td align="right">-7</td>
+<td align="left">GGT</td>
+<td align="left">Gamma Glutamyl Transferase (U/L)</td>
+<td align="right">5</td>
+<td align="left">CHEMISTRY</td>
+<td align="left">SI</td>
+<td align="right">15.00000</td>
+<td align="left">NA</td>
+<td align="right">5.00000</td>
+<td align="right">50.00000</td>
+</tr>
+<tr class="even">
+<td align="left">CDISCPILOT01</td>
+<td align="left">01-701-1015</td>
+<td align="left">2013-12-26</td>
+<td align="right">-7</td>
+<td align="left">GLUC</td>
+<td align="left">Glucose (mmol/L)</td>
+<td align="right">6</td>
+<td align="left">CHEMISTRY</td>
+<td align="left">SI</td>
+<td align="right">4.71835</td>
+<td align="left">NA</td>
+<td align="right">2.80000</td>
+<td align="right">13.90000</td>
+</tr>
+<tr class="odd">
+<td align="left">CDISCPILOT01</td>
+<td align="left">01-701-1015</td>
+<td align="left">2013-12-26</td>
+<td align="right">-7</td>
+<td align="left">HBA1CHGB</td>
+<td align="left">Hemoglobin A1C/Hemoglobin (mmol/mol)</td>
+<td align="right">7</td>
+<td align="left">CHEMISTRY</td>
+<td align="left">SI</td>
+<td align="right">62.84175</td>
+<td align="left">NA</td>
+<td align="right">20.21865</td>
+<td align="right">38.79795</td>
+</tr>
+<tr class="even">
+<td align="left">CDISCPILOT01</td>
+<td align="left">01-701-1015</td>
+<td align="left">2013-12-26</td>
+<td align="right">-7</td>
+<td align="left">INSULIN</td>
+<td align="left">Insulin (mIU/L)</td>
+<td align="right">8</td>
+<td align="left">CHEMISTRY</td>
+<td align="left">CV</td>
+<td align="right">14.40000</td>
+<td align="left">NA</td>
+<td align="right">2.00000</td>
+<td align="right">25.00000</td>
+</tr>
+<tr class="odd">
+<td align="left">CDISCPILOT01</td>
+<td align="left">01-701-1015</td>
+<td align="left">2013-12-26</td>
+<td align="right">-7</td>
+<td align="left">TRIG</td>
+<td align="left">Triglycerides (mg/dL)</td>
+<td align="right">9</td>
+<td align="left">CHEMISTRY</td>
+<td align="left">CV</td>
+<td align="right">111.10000</td>
+<td align="left">NA</td>
+<td align="right">0.00000</td>
+<td align="right">150.00000</td>
+</tr>
+<tr class="even">
+<td align="left">CDISCPILOT01</td>
+<td align="left">01-701-1015</td>
+<td align="left">2014-01-16</td>
+<td align="right">15</td>
+<td align="left">ALB</td>
+<td align="left">Albumin (g/L)</td>
+<td align="right">1</td>
+<td align="left">CHEMISTRY</td>
+<td align="left">SI</td>
+<td align="right">39.00000</td>
+<td align="left">NA</td>
+<td align="right">33.00000</td>
+<td align="right">49.00000</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="derive_visits" class="section level2">
+<h2>Derive Visit Information</h2>
+<p>Derive Analysis Visit (<code>AVISIT</code>) and Analysis Visit Number
+(<code>AVISITN</code>).</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a>adlb <span class="ot">&lt;-</span> adlb <span class="sc">%&gt;%</span></span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>    <span class="at">AVISIT =</span> <span class="fu">case_when</span>(</span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a>      <span class="fu">str_detect</span>(VISIT, <span class="st">&quot;SCREEN&quot;</span>) <span class="sc">~</span> <span class="st">&quot;Baseline&quot;</span>,</span>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a>      <span class="sc">!</span><span class="fu">is.na</span>(VISIT) <span class="sc">~</span> <span class="fu">str_to_title</span>(VISIT),</span>
+<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a>      <span class="cn">TRUE</span> <span class="sc">~</span> <span class="cn">NA_character_</span></span>
+<span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a>    ),</span>
+<span id="cb5-8"><a href="#cb5-8" tabindex="-1"></a>    <span class="at">AVISITN =</span> <span class="fu">case_when</span>(</span>
+<span id="cb5-9"><a href="#cb5-9" tabindex="-1"></a>      AVISIT <span class="sc">==</span> <span class="st">&quot;Baseline&quot;</span> <span class="sc">~</span> <span class="dv">0</span>,</span>
+<span id="cb5-10"><a href="#cb5-10" tabindex="-1"></a>      <span class="fu">str_detect</span>(VISIT, <span class="st">&quot;WEEK&quot;</span>) <span class="sc">~</span> <span class="fu">as.integer</span>(<span class="fu">str_extract</span>(VISIT, <span class="st">&quot;</span><span class="sc">\\</span><span class="st">d+&quot;</span>)),</span>
+<span id="cb5-11"><a href="#cb5-11" tabindex="-1"></a>      <span class="cn">TRUE</span> <span class="sc">~</span> <span class="cn">NA_integer_</span></span>
+<span id="cb5-12"><a href="#cb5-12" tabindex="-1"></a>    )</span>
+<span id="cb5-13"><a href="#cb5-13" tabindex="-1"></a>  )</span></code></pre></div>
+<table>
+<colgroup>
+<col width="11%" />
+<col width="10%" />
+<col width="8%" />
+<col width="33%" />
+<col width="8%" />
+<col width="8%" />
+<col width="3%" />
+<col width="8%" />
+<col width="7%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">STUDYID</th>
+<th align="left">USUBJID</th>
+<th align="left">PARAMCD</th>
+<th align="left">PARAM</th>
+<th align="left">PARCAT1</th>
+<th align="right">AVAL</th>
+<th align="right">ADY</th>
+<th align="left">AVISIT</th>
+<th align="right">AVISITN</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">CDISCPILOT01</td>
+<td align="left">01-701-1015</td>
+<td align="left">ALB</td>
+<td align="left">Albumin (g/L)</td>
+<td align="left">CHEMISTRY</td>
+<td align="right">38.00000</td>
+<td align="right">-7</td>
+<td align="left">Baseline</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">CDISCPILOT01</td>
+<td align="left">01-701-1015</td>
+<td align="left">ALKPH</td>
+<td align="left">Alkaline Phosphatase (U/L)</td>
+<td align="left">CHEMISTRY</td>
+<td align="right">34.00000</td>
+<td align="right">-7</td>
+<td align="left">Baseline</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="left">CDISCPILOT01</td>
+<td align="left">01-701-1015</td>
+<td align="left">AST</td>
+<td align="left">Aspartate Aminotransferase (U/L)</td>
+<td align="left">CHEMISTRY</td>
+<td align="right">40.00000</td>
+<td align="right">-7</td>
+<td align="left">Baseline</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">CDISCPILOT01</td>
+<td align="left">01-701-1015</td>
+<td align="left">CHOLES</td>
+<td align="left">Cholesterol (mmol/L)</td>
+<td align="left">CHEMISTRY</td>
+<td align="right">5.94780</td>
+<td align="right">-7</td>
+<td align="left">Baseline</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="left">CDISCPILOT01</td>
+<td align="left">01-701-1015</td>
+<td align="left">GGT</td>
+<td align="left">Gamma Glutamyl Transferase (U/L)</td>
+<td align="left">CHEMISTRY</td>
+<td align="right">15.00000</td>
+<td align="right">-7</td>
+<td align="left">Baseline</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">CDISCPILOT01</td>
+<td align="left">01-701-1015</td>
+<td align="left">GLUC</td>
+<td align="left">Glucose (mmol/L)</td>
+<td align="left">CHEMISTRY</td>
+<td align="right">4.71835</td>
+<td align="right">-7</td>
+<td align="left">Baseline</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="left">CDISCPILOT01</td>
+<td align="left">01-701-1015</td>
+<td align="left">HBA1CHGB</td>
+<td align="left">Hemoglobin A1C/Hemoglobin (mmol/mol)</td>
+<td align="left">CHEMISTRY</td>
+<td align="right">62.84175</td>
+<td align="right">-7</td>
+<td align="left">Baseline</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">CDISCPILOT01</td>
+<td align="left">01-701-1015</td>
+<td align="left">INSULIN</td>
+<td align="left">Insulin (mIU/L)</td>
+<td align="left">CHEMISTRY</td>
+<td align="right">14.40000</td>
+<td align="right">-7</td>
+<td align="left">Baseline</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="left">CDISCPILOT01</td>
+<td align="left">01-701-1015</td>
+<td align="left">TRIG</td>
+<td align="left">Triglycerides (mg/dL)</td>
+<td align="left">CHEMISTRY</td>
+<td align="right">111.10000</td>
+<td align="right">-7</td>
+<td align="left">Baseline</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">CDISCPILOT01</td>
+<td align="left">01-701-1015</td>
+<td align="left">ALB</td>
+<td align="left">Albumin (g/L)</td>
+<td align="left">CHEMISTRY</td>
+<td align="right">39.00000</td>
+<td align="right">15</td>
+<td align="left">Week 2</td>
+<td align="right">2</td>
+</tr>
+</tbody>
+</table>
+<p>For deriving visits based on time-windows, see <code>{admiral}</code>
+<a href="https://pharmaverse.github.io/admiral/articles/visits_periods.html">Visit
+and Period Variables</a>.</p>
+</div>
+<div id="metabolic_params_desc" class="section level2">
+<h2>Derive Metabolic Parameters</h2>
+<p>In addition to the core ADLB variables, several metabolic parameters
+and scores will be derived based on laboratory data and vital signs.
+These derivations include:</p>
+<ul>
+<li><p><strong>Fatty Liver Index (FLI)</strong>: Derived from
+triglycerides (mg/dL), GGT (U/L), BMI (kg/m2), and waist circumference
+(cm). <span class="math display">\[ FLI = \left[\frac{\exp(\lambda)}{1 +
+\exp(\lambda)}\right] \times 100 \]</span> where <span class="math display">\[ \lambda = 0.953 \times \ln
+(\text{triglycerides}) + 0.139 \times BMI + 0.718 \times \ln (GGT) +
+0.053 \times \text{waist circumference} – 15.745. \]</span> FLI is
+interpreted as a score between 0 and 100, where higher values indicate a
+worse condition.</p></li>
+<li><p><strong>Homeostasis Model Assessment – Insulin Resistance
+(HOMA-IR)</strong>: Calculated from fasting plasma glucose (mmol/L) and
+fasting plasma insulin (mIU/L). <span class="math display">\[
+\text{HOMA-IR} = \frac{FPI \times FPG}{22.5}. \]</span> An alternative
+formula is used when fasting plasma glucose is assessed in mg/dL: <span class="math display">\[ \text{HOMA-IR} = \frac{FPI \times FPG}{405}.
+\]</span></p></li>
+</ul>
+<p>To derive these parameters and scores, the following variables will
+be needed:</p>
+<ul>
+<li>From ADLB: TRIG (Triglycerides), GGT, GLUC (fasted), INSULIN
+(fasted).</li>
+<li>From ADVS: BMI, WSTCIR (Waist Circumference).</li>
+</ul>
+<div id="merge" class="section level3">
+<h3>Add variables required for derivation</h3>
+<p>In this section, we will merge relevant variables needed to derive
+metabolic parameter from the ADVS (Analysis Dataset for Vital Signs)
+dataset into the ADLB dataset. This is necessary to include variables
+such as BMI and Waist Circumference, which are required for the
+derivation of FLI score parameter in subsequent section.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="co"># Load ADVS dataset (assuming it has been created by ad_advs.R)</span></span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>admiralmetabolic_advs <span class="ot">&lt;-</span> admiralmetabolic<span class="sc">::</span>admiralmetabolic_advs</span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a>advs <span class="ot">&lt;-</span> <span class="fu">convert_blanks_to_na</span>(admiralmetabolic_advs)</span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a></span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a><span class="co"># Merge BMI and WSTCIR from ADVS to ADLB based on subject and date</span></span>
+<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a>adlb <span class="ot">&lt;-</span> adlb <span class="sc">%&gt;%</span></span>
+<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a>  <span class="fu">derive_vars_transposed</span>(</span>
+<span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a>    advs,</span>
+<span id="cb6-9"><a href="#cb6-9" tabindex="-1"></a>    <span class="at">by_vars =</span> <span class="fu">exprs</span>(<span class="sc">!!!</span><span class="fu">get_admiral_option</span>(<span class="st">&quot;subject_keys&quot;</span>), ADT),</span>
+<span id="cb6-10"><a href="#cb6-10" tabindex="-1"></a>    <span class="at">key_var =</span> PARAMCD,</span>
+<span id="cb6-11"><a href="#cb6-11" tabindex="-1"></a>    <span class="at">value_var =</span> AVAL,</span>
+<span id="cb6-12"><a href="#cb6-12" tabindex="-1"></a>    <span class="at">filter =</span> PARAMCD <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">&quot;BMI&quot;</span>, <span class="st">&quot;WSTCIR&quot;</span>)</span>
+<span id="cb6-13"><a href="#cb6-13" tabindex="-1"></a>  )</span></code></pre></div>
+<p>Please note that in this example we merge on ADT, but it is also
+possible to merge on AVISIT or other windowing algorithms specified in
+the statistical analysis plan.</p>
+<table style="width:100%;">
+<colgroup>
+<col width="10%" />
+<col width="9%" />
+<col width="6%" />
+<col width="28%" />
+<col width="7%" />
+<col width="8%" />
+<col width="3%" />
+<col width="6%" />
+<col width="6%" />
+<col width="6%" />
+<col width="5%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">STUDYID</th>
+<th align="left">USUBJID</th>
+<th align="left">PARAMCD</th>
+<th align="left">PARAM</th>
+<th align="right">AVAL</th>
+<th align="left">ADT</th>
+<th align="right">ADY</th>
+<th align="left">AVISIT</th>
+<th align="right">AVISITN</th>
+<th align="right">BMI</th>
+<th align="right">WSTCIR</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">CDISCPILOT01</td>
+<td align="left">01-701-1015</td>
+<td align="left">ALB</td>
+<td align="left">Albumin (g/L)</td>
+<td align="right">38.00000</td>
+<td align="left">2013-12-26</td>
+<td align="right">-7</td>
+<td align="left">Baseline</td>
+<td align="right">0</td>
+<td align="right">38.10500</td>
+<td align="right">99</td>
+</tr>
+<tr class="even">
+<td align="left">CDISCPILOT01</td>
+<td align="left">01-701-1015</td>
+<td align="left">ALKPH</td>
+<td align="left">Alkaline Phosphatase (U/L)</td>
+<td align="right">34.00000</td>
+<td align="left">2013-12-26</td>
+<td align="right">-7</td>
+<td align="left">Baseline</td>
+<td align="right">0</td>
+<td align="right">38.10500</td>
+<td align="right">99</td>
+</tr>
+<tr class="odd">
+<td align="left">CDISCPILOT01</td>
+<td align="left">01-701-1015</td>
+<td align="left">AST</td>
+<td align="left">Aspartate Aminotransferase (U/L)</td>
+<td align="right">40.00000</td>
+<td align="left">2013-12-26</td>
+<td align="right">-7</td>
+<td align="left">Baseline</td>
+<td align="right">0</td>
+<td align="right">38.10500</td>
+<td align="right">99</td>
+</tr>
+<tr class="even">
+<td align="left">CDISCPILOT01</td>
+<td align="left">01-701-1015</td>
+<td align="left">CHOLES</td>
+<td align="left">Cholesterol (mmol/L)</td>
+<td align="right">5.94780</td>
+<td align="left">2013-12-26</td>
+<td align="right">-7</td>
+<td align="left">Baseline</td>
+<td align="right">0</td>
+<td align="right">38.10500</td>
+<td align="right">99</td>
+</tr>
+<tr class="odd">
+<td align="left">CDISCPILOT01</td>
+<td align="left">01-701-1015</td>
+<td align="left">GGT</td>
+<td align="left">Gamma Glutamyl Transferase (U/L)</td>
+<td align="right">15.00000</td>
+<td align="left">2013-12-26</td>
+<td align="right">-7</td>
+<td align="left">Baseline</td>
+<td align="right">0</td>
+<td align="right">38.10500</td>
+<td align="right">99</td>
+</tr>
+<tr class="even">
+<td align="left">CDISCPILOT01</td>
+<td align="left">01-701-1015</td>
+<td align="left">GLUC</td>
+<td align="left">Glucose (mmol/L)</td>
+<td align="right">4.71835</td>
+<td align="left">2013-12-26</td>
+<td align="right">-7</td>
+<td align="left">Baseline</td>
+<td align="right">0</td>
+<td align="right">38.10500</td>
+<td align="right">99</td>
+</tr>
+<tr class="odd">
+<td align="left">CDISCPILOT01</td>
+<td align="left">01-701-1015</td>
+<td align="left">HBA1CHGB</td>
+<td align="left">Hemoglobin A1C/Hemoglobin (mmol/mol)</td>
+<td align="right">62.84175</td>
+<td align="left">2013-12-26</td>
+<td align="right">-7</td>
+<td align="left">Baseline</td>
+<td align="right">0</td>
+<td align="right">38.10500</td>
+<td align="right">99</td>
+</tr>
+<tr class="even">
+<td align="left">CDISCPILOT01</td>
+<td align="left">01-701-1015</td>
+<td align="left">INSULIN</td>
+<td align="left">Insulin (mIU/L)</td>
+<td align="right">14.40000</td>
+<td align="left">2013-12-26</td>
+<td align="right">-7</td>
+<td align="left">Baseline</td>
+<td align="right">0</td>
+<td align="right">38.10500</td>
+<td align="right">99</td>
+</tr>
+<tr class="odd">
+<td align="left">CDISCPILOT01</td>
+<td align="left">01-701-1015</td>
+<td align="left">TRIG</td>
+<td align="left">Triglycerides (mg/dL)</td>
+<td align="right">111.10000</td>
+<td align="left">2013-12-26</td>
+<td align="right">-7</td>
+<td align="left">Baseline</td>
+<td align="right">0</td>
+<td align="right">38.10500</td>
+<td align="right">99</td>
+</tr>
+<tr class="even">
+<td align="left">CDISCPILOT01</td>
+<td align="left">01-701-1015</td>
+<td align="left">ALB</td>
+<td align="left">Albumin (g/L)</td>
+<td align="right">39.00000</td>
+<td align="left">2014-01-16</td>
+<td align="right">15</td>
+<td align="left">Week 2</td>
+<td align="right">2</td>
+<td align="right">38.53219</td>
+<td align="right">100</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="derive_homa" class="section level3">
+<h3>Derive HOMA-IR index</h3>
+<p>This part describes how to calculate the Homeostasis Model Assessment
+– Insulin Resistance (HOMA-IR) index from fasting plasma glucose and
+fasting plasma insulin. This derivation does not require merging data
+from other datasets.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="co"># Derive HOMA-IR using derive_param_computed</span></span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a>adlb <span class="ot">&lt;-</span> adlb <span class="sc">%&gt;%</span></span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a>  <span class="fu">derive_param_computed</span>(</span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a>    <span class="at">by_vars =</span> <span class="fu">exprs</span>(<span class="sc">!!!</span><span class="fu">get_admiral_option</span>(<span class="st">&quot;subject_keys&quot;</span>), AVISIT, AVISITN, ADT, ADY, <span class="sc">!!!</span>adsl_vars),</span>
+<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a>    <span class="at">parameters =</span> <span class="fu">c</span>(<span class="st">&quot;INSULIN&quot;</span>, <span class="st">&quot;GLUC&quot;</span>),</span>
+<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a>    <span class="at">set_values_to =</span> <span class="fu">exprs</span>(</span>
+<span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a>      <span class="at">AVAL =</span> AVAL.INSULIN <span class="sc">*</span> AVAL.GLUC <span class="sc">/</span> <span class="fl">22.5</span>,</span>
+<span id="cb7-8"><a href="#cb7-8" tabindex="-1"></a>      <span class="at">PARAMCD =</span> <span class="st">&quot;HOMAIR&quot;</span>,</span>
+<span id="cb7-9"><a href="#cb7-9" tabindex="-1"></a>      <span class="at">PARAM =</span> <span class="st">&quot;Homeostasis Model Assessment - Insulin Resistance&quot;</span>,</span>
+<span id="cb7-10"><a href="#cb7-10" tabindex="-1"></a>      <span class="at">PARAMN =</span> <span class="dv">10</span></span>
+<span id="cb7-11"><a href="#cb7-11" tabindex="-1"></a>    )</span>
+<span id="cb7-12"><a href="#cb7-12" tabindex="-1"></a>  )</span></code></pre></div>
+<table>
+<colgroup>
+<col width="11%" />
+<col width="10%" />
+<col width="7%" />
+<col width="44%" />
+<col width="7%" />
+<col width="3%" />
+<col width="7%" />
+<col width="7%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">STUDYID</th>
+<th align="left">USUBJID</th>
+<th align="left">PARAMCD</th>
+<th align="left">PARAM</th>
+<th align="right">AVAL</th>
+<th align="right">ADY</th>
+<th align="left">AVISIT</th>
+<th align="right">AVISITN</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">CDISCPILOT01</td>
+<td align="left">01-701-1015</td>
+<td align="left">HOMAIR</td>
+<td align="left">Homeostasis Model Assessment - Insulin Resistance</td>
+<td align="right">3.019744</td>
+<td align="right">-7</td>
+<td align="left">Baseline</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">CDISCPILOT01</td>
+<td align="left">01-701-1015</td>
+<td align="left">HOMAIR</td>
+<td align="left">Homeostasis Model Assessment - Insulin Resistance</td>
+<td align="right">8.289493</td>
+<td align="right">15</td>
+<td align="left">Week 2</td>
+<td align="right">2</td>
+</tr>
+<tr class="odd">
+<td align="left">CDISCPILOT01</td>
+<td align="left">01-701-1015</td>
+<td align="left">HOMAIR</td>
+<td align="left">Homeostasis Model Assessment - Insulin Resistance</td>
+<td align="right">5.606263</td>
+<td align="right">42</td>
+<td align="left">Week 6</td>
+<td align="right">6</td>
+</tr>
+<tr class="even">
+<td align="left">CDISCPILOT01</td>
+<td align="left">01-701-1015</td>
+<td align="left">HOMAIR</td>
+<td align="left">Homeostasis Model Assessment - Insulin Resistance</td>
+<td align="right">4.369747</td>
+<td align="right">63</td>
+<td align="left">Week 8</td>
+<td align="right">8</td>
+</tr>
+<tr class="odd">
+<td align="left">CDISCPILOT01</td>
+<td align="left">01-701-1015</td>
+<td align="left">HOMAIR</td>
+<td align="left">Homeostasis Model Assessment - Insulin Resistance</td>
+<td align="right">6.675262</td>
+<td align="right">84</td>
+<td align="left">Week 12</td>
+<td align="right">12</td>
+</tr>
+<tr class="even">
+<td align="left">CDISCPILOT01</td>
+<td align="left">01-701-1015</td>
+<td align="left">HOMAIR</td>
+<td align="left">Homeostasis Model Assessment - Insulin Resistance</td>
+<td align="right">8.635382</td>
+<td align="right">126</td>
+<td align="left">Week 16</td>
+<td align="right">16</td>
+</tr>
+<tr class="odd">
+<td align="left">CDISCPILOT01</td>
+<td align="left">01-701-1015</td>
+<td align="left">HOMAIR</td>
+<td align="left">Homeostasis Model Assessment - Insulin Resistance</td>
+<td align="right">3.495403</td>
+<td align="right">140</td>
+<td align="left">Week 20</td>
+<td align="right">20</td>
+</tr>
+<tr class="even">
+<td align="left">CDISCPILOT01</td>
+<td align="left">01-701-1015</td>
+<td align="left">HOMAIR</td>
+<td align="left">Homeostasis Model Assessment - Insulin Resistance</td>
+<td align="right">6.354785</td>
+<td align="right">168</td>
+<td align="left">Week 24</td>
+<td align="right">24</td>
+</tr>
+<tr class="odd">
+<td align="left">CDISCPILOT01</td>
+<td align="left">01-701-1015</td>
+<td align="left">HOMAIR</td>
+<td align="left">Homeostasis Model Assessment - Insulin Resistance</td>
+<td align="right">6.854622</td>
+<td align="right">182</td>
+<td align="left">Week 26</td>
+<td align="right">26</td>
+</tr>
+<tr class="even">
+<td align="left">CDISCPILOT01</td>
+<td align="left">01-701-1023</td>
+<td align="left">HOMAIR</td>
+<td align="left">Homeostasis Model Assessment - Insulin Resistance</td>
+<td align="right">6.513173</td>
+<td align="right">-14</td>
+<td align="left">Baseline</td>
+<td align="right">0</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="derive_fli" class="section level3">
+<h3>Derive FLI score</h3>
+<p>To obtain the FLI score parameter, we’ll utilize triglycerides, GGT,
+BMI, and waist circumference. Note that this derivation requires merging
+data from the ADVS dataset (BMI and Waist Circumference), as
+demonstrated in the previous section. FLI is provided here as an
+example; users can derive other metabolic scores like HSI, NAFLD, and
+others using the same logic and required input variables.</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="co"># Derive FLI using derive_param_computed</span></span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>adlb <span class="ot">&lt;-</span> adlb <span class="sc">%&gt;%</span></span>
+<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a>  <span class="fu">derive_param_computed</span>(</span>
+<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a>    <span class="at">by_vars =</span> <span class="fu">exprs</span>(<span class="sc">!!!</span><span class="fu">get_admiral_option</span>(<span class="st">&quot;subject_keys&quot;</span>), AVISIT, AVISITN, ADT, ADY, BMI, WSTCIR, <span class="sc">!!!</span>adsl_vars),</span>
+<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a>    <span class="at">parameters =</span> <span class="fu">c</span>(<span class="st">&quot;TRIG&quot;</span>, <span class="st">&quot;GGT&quot;</span>),</span>
+<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a>    <span class="at">set_values_to =</span> <span class="fu">exprs</span>(</span>
+<span id="cb8-7"><a href="#cb8-7" tabindex="-1"></a>      <span class="at">AVAL =</span> {</span>
+<span id="cb8-8"><a href="#cb8-8" tabindex="-1"></a>        lambda <span class="ot">&lt;-</span> <span class="fl">0.953</span> <span class="sc">*</span> <span class="fu">log</span>(AVAL.TRIG) <span class="sc">+</span> <span class="fl">0.139</span> <span class="sc">*</span> BMI <span class="sc">+</span> <span class="fl">0.718</span> <span class="sc">*</span> <span class="fu">log</span>(AVAL.GGT) <span class="sc">+</span> <span class="fl">0.053</span> <span class="sc">*</span> WSTCIR <span class="sc">-</span> <span class="fl">15.745</span></span>
+<span id="cb8-9"><a href="#cb8-9" tabindex="-1"></a>        (<span class="fu">exp</span>(lambda) <span class="sc">/</span> (<span class="dv">1</span> <span class="sc">+</span> <span class="fu">exp</span>(lambda))) <span class="sc">*</span> <span class="dv">100</span></span>
+<span id="cb8-10"><a href="#cb8-10" tabindex="-1"></a>      },</span>
+<span id="cb8-11"><a href="#cb8-11" tabindex="-1"></a>      <span class="at">PARAMCD =</span> <span class="st">&quot;FLI&quot;</span>,</span>
+<span id="cb8-12"><a href="#cb8-12" tabindex="-1"></a>      <span class="at">PARAM =</span> <span class="st">&quot;Fatty Liver Index&quot;</span>,</span>
+<span id="cb8-13"><a href="#cb8-13" tabindex="-1"></a>      <span class="at">PARAMN =</span> <span class="dv">11</span></span>
+<span id="cb8-14"><a href="#cb8-14" tabindex="-1"></a>    )</span>
+<span id="cb8-15"><a href="#cb8-15" tabindex="-1"></a>  )</span>
+<span id="cb8-16"><a href="#cb8-16" tabindex="-1"></a></span>
+<span id="cb8-17"><a href="#cb8-17" tabindex="-1"></a>adlb <span class="ot">&lt;-</span> adlb <span class="sc">%&gt;%</span></span>
+<span id="cb8-18"><a href="#cb8-18" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="sc">!!!</span><span class="fu">get_admiral_option</span>(<span class="st">&quot;subject_keys&quot;</span>), ADT, PARAMN) <span class="co"># Arrange for consistency</span></span></code></pre></div>
+<table>
+<colgroup>
+<col width="16%" />
+<col width="14%" />
+<col width="9%" />
+<col width="22%" />
+<col width="11%" />
+<col width="4%" />
+<col width="11%" />
+<col width="9%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">STUDYID</th>
+<th align="left">USUBJID</th>
+<th align="left">PARAMCD</th>
+<th align="left">PARAM</th>
+<th align="right">AVAL</th>
+<th align="right">ADY</th>
+<th align="left">AVISIT</th>
+<th align="right">AVISITN</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">CDISCPILOT01</td>
+<td align="left">01-701-1015</td>
+<td align="left">FLI</td>
+<td align="left">Fatty Liver Index</td>
+<td align="right">77.41712</td>
+<td align="right">-7</td>
+<td align="left">Baseline</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">CDISCPILOT01</td>
+<td align="left">01-701-1015</td>
+<td align="left">FLI</td>
+<td align="left">Fatty Liver Index</td>
+<td align="right">52.97118</td>
+<td align="right">15</td>
+<td align="left">Week 2</td>
+<td align="right">2</td>
+</tr>
+<tr class="odd">
+<td align="left">CDISCPILOT01</td>
+<td align="left">01-701-1015</td>
+<td align="left">FLI</td>
+<td align="left">Fatty Liver Index</td>
+<td align="right">83.46849</td>
+<td align="right">42</td>
+<td align="left">Week 6</td>
+<td align="right">6</td>
+</tr>
+<tr class="even">
+<td align="left">CDISCPILOT01</td>
+<td align="left">01-701-1015</td>
+<td align="left">FLI</td>
+<td align="left">Fatty Liver Index</td>
+<td align="right">81.29596</td>
+<td align="right">63</td>
+<td align="left">Week 8</td>
+<td align="right">8</td>
+</tr>
+<tr class="odd">
+<td align="left">CDISCPILOT01</td>
+<td align="left">01-701-1015</td>
+<td align="left">FLI</td>
+<td align="left">Fatty Liver Index</td>
+<td align="right">69.50608</td>
+<td align="right">84</td>
+<td align="left">Week 12</td>
+<td align="right">12</td>
+</tr>
+<tr class="even">
+<td align="left">CDISCPILOT01</td>
+<td align="left">01-701-1015</td>
+<td align="left">FLI</td>
+<td align="left">Fatty Liver Index</td>
+<td align="right">51.45346</td>
+<td align="right">126</td>
+<td align="left">Week 16</td>
+<td align="right">16</td>
+</tr>
+<tr class="odd">
+<td align="left">CDISCPILOT01</td>
+<td align="left">01-701-1015</td>
+<td align="left">FLI</td>
+<td align="left">Fatty Liver Index</td>
+<td align="right">91.01194</td>
+<td align="right">140</td>
+<td align="left">Week 20</td>
+<td align="right">20</td>
+</tr>
+<tr class="even">
+<td align="left">CDISCPILOT01</td>
+<td align="left">01-701-1015</td>
+<td align="left">FLI</td>
+<td align="left">Fatty Liver Index</td>
+<td align="right">93.15697</td>
+<td align="right">168</td>
+<td align="left">Week 24</td>
+<td align="right">24</td>
+</tr>
+<tr class="odd">
+<td align="left">CDISCPILOT01</td>
+<td align="left">01-701-1015</td>
+<td align="left">FLI</td>
+<td align="left">Fatty Liver Index</td>
+<td align="right">88.77355</td>
+<td align="right">182</td>
+<td align="left">Week 26</td>
+<td align="right">26</td>
+</tr>
+<tr class="even">
+<td align="left">CDISCPILOT01</td>
+<td align="left">01-701-1023</td>
+<td align="left">FLI</td>
+<td align="left">Fatty Liver Index</td>
+<td align="right">73.64499</td>
+<td align="right">-14</td>
+<td align="left">Baseline</td>
+<td align="right">0</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div id="adlb_end" class="section level2">
+<h2>Remaining ADLB Set-up</h2>
+<p>The <code>{admiral}</code> <a href="https://pharmaverse.github.io/admiral/articles/bds_finding.html">Creating
+a BDS Finding ADaM vignette</a> describes further steps, including how
+to calculate baseline and change from baseline variables, add analysis
+flags (e.g., <code>ANL01FL</code>), handle reference ranges,
+categorizations, and other common ADLB requirements.</p>
+</div>
+</div>
+<div id="example" class="section level1">
+<h1>Example Scripts</h1>
+<table>
+<colgroup>
+<col width="22%" />
+<col width="77%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>ADaM</th>
+<th>Sample Code</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>ADLB</td>
+<td><a href="https://github.com/pharmaverse/admiralmetabolic/blob/main/inst/templates/ad_adlb.R" target="_blank">ad_adlb.R</a></td>
+</tr>
+</tbody>
+</table>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
