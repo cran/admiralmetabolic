@@ -1,7 +1,7 @@
 Type: Package
 Package: admiralmetabolic
 Title: Metabolism Extension Package for ADaM in 'R' Asset Library
-Version: 0.2.0
+Version: 0.3.0
 Authors@R: c(
     person("Anders", "Askeland", , "iakd@novonordisk.com", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-2996-129X")),
@@ -35,7 +35,7 @@ URL: https://pharmaverse.github.io/admiralmetabolic/,
         https://github.com/pharmaverse/admiralmetabolic
 BugReports: https://github.com/pharmaverse/admiralmetabolic/issues
 Depends: R (>= 4.1)
-Imports: admiral (>= 1.1.1), admiraldev (>= 1.2.0), cli (>= 3.6.2),
+Imports: admiral (>= 1.1.1), admiraldev (>= 1.4.0), cli (>= 3.6.2),
         dplyr (>= 0.8.4), lifecycle (>= 0.1.0), lubridate (>= 1.7.4),
         magrittr (>= 1.5), purrr (>= 0.3.3), rlang (>= 0.4.4), stringr
         (>= 1.4.0), tidyselect (>= 1.0.0)
@@ -47,9 +47,9 @@ Config/testthat/edition: 3
 Encoding: UTF-8
 Language: en-US
 LazyData: true
-RoxygenNote: 7.3.2
+RoxygenNote: 7.3.3
 NeedsCompilation: no
-Packaged: 2025-07-16 10:52:41 UTC; iakd
+Packaged: 2026-02-02 08:41:30 UTC; iakd
 Author: Anders Askeland [aut, cre] (ORCID:
     <https://orcid.org/0000-0002-2996-129X>),
   Andrii Yurovskyi [aut] (ORCID: <https://orcid.org/0009-0006-8606-0929>),
@@ -63,4 +63,4 @@ Author: Anders Askeland [aut, cre] (ORCID:
   Keita Takahashi [aut] (ORCID: <https://orcid.org/0009-0004-9847-5115>)
 Maintainer: Anders Askeland <iakd@novonordisk.com>
 Repository: CRAN
-Date/Publication: 2025-07-16 11:10:02 UTC
+Date/Publication: 2026-02-02 09:20:02 UTC
